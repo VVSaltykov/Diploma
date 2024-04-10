@@ -1,0 +1,3 @@
+[submodule "tg-bot-lib"]
+	path = tg-bot-lib
+	url = https://github.com/VVSaltykov/tg-bot-lib.git

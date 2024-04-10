@@ -1,0 +1,28 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TgBotLib.Core", "tg-bot-lib\src\TgBotLib.Core\TgBotLib.Core.csproj", "{F14B2CF9-809F-41BE-ABEF-B615425AC20E}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Diploma.API", "Diploma.API\Diploma.API.csproj", "{1727F5DC-42FE-4A7D-89E1-1227124B3353}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Diploma.TgBot", "Diploma.TgBot\Diploma.TgBot.csproj", "{9F38CCB3-FF6B-4726-A676-C477098D7154}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{F14B2CF9-809F-41BE-ABEF-B615425AC20E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F14B2CF9-809F-41BE-ABEF-B615425AC20E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{F14B2CF9-809F-41BE-ABEF-B615425AC20E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{F14B2CF9-809F-41BE-ABEF-B615425AC20E}.Release|Any CPU.Build.0 = Release|Any CPU
+		{1727F5DC-42FE-4A7D-89E1-1227124B3353}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{1727F5DC-42FE-4A7D-89E1-1227124B3353}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{1727F5DC-42FE-4A7D-89E1-1227124B3353}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{1727F5DC-42FE-4A7D-89E1-1227124B3353}.Release|Any CPU.Build.0 = Release|Any CPU
+		{9F38CCB3-FF6B-4726-A676-C477098D7154}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{9F38CCB3-FF6B-4726-A676-C477098D7154}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{9F38CCB3-FF6B-4726-A676-C477098D7154}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{9F38CCB3-FF6B-4726-A676-C477098D7154}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+EndGlobal
