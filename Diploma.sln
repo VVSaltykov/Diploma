@@ -6,6 +6,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Diploma.API", "Diploma.API\
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Diploma.TgBot", "Diploma.TgBot\Diploma.TgBot.csproj", "{9F38CCB3-FF6B-4726-A676-C477098D7154}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Diploma.Common", "Diploma.Common\Diploma.Common.csproj", "{A29DD934-0931-4F25-B63A-0ADDB61B7D41}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -24,5 +26,9 @@ Global
 		{9F38CCB3-FF6B-4726-A676-C477098D7154}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{9F38CCB3-FF6B-4726-A676-C477098D7154}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{9F38CCB3-FF6B-4726-A676-C477098D7154}.Release|Any CPU.Build.0 = Release|Any CPU
+		{A29DD934-0931-4F25-B63A-0ADDB61B7D41}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A29DD934-0931-4F25-B63A-0ADDB61B7D41}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A29DD934-0931-4F25-B63A-0ADDB61B7D41}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A29DD934-0931-4F25-B63A-0ADDB61B7D41}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal

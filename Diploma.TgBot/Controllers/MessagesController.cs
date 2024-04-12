@@ -1,4 +1,5 @@
 ﻿using Telegram.Bot;
+using Telegram.Bot.Types.Enums;
 using TgBotLib.Core;
 using TgBotLib.Core.Base;
 
@@ -16,21 +17,29 @@ public class MessagesController : BotController
         _keyboardButtonsGenerationService = keyboardButtonsGenerationService;
     }
     
-    [Message("Test")]
-    [Message(@"Test\d", isPattern: true)]
-    public Task TestMessage()
+    [Message("start")]
+    public async Task StartMessage()
     {
-        _keyboardButtonsGenerationService.SetKeyboardButtons("Test", "Test1", "Buttons");
-        return Client.SendTextMessageAsync(Update.GetChatId(),
-            "Test message",
-            replyMarkup: _keyboardButtonsGenerationService.GetButtons());
+        await Client.SendTextMessageAsync(Update.GetChatId(),
+            "Отправьте номер телефона для регистрации",
+            replyMarkup: ButtonsHelper.CreateButtonWithContactRequest("Поделиться контактом"));
     }
-
-    [Callback(nameof(TestCallback))]
-    [Callback(@"\d", isPattern: true)]
-    public Task TestCallback()
+    
+    [UnknownMessage]
+    public async Task ContactMessage()
     {
-        return Client.SendTextMessageAsync(Update.GetChatId(), "Test callback");
+        HttpClient client = new HttpClient();
+        long chatId = Update.GetChatId();
+        
+        var formData = new Dictionary<string, string>
+        {
+            { "chatId", chatId.ToString() },
+            { "phoneNumber", Update.Message?.Contact.PhoneNumber } 
+        };
+
+        var content = new FormUrlEncodedContent(formData);
+
+        var response = await client.PostAsync("https://localhost:7165/api/Account/Registrate", content);
     }
 
     [Message("Buttons", ignoreCase: true)]
@@ -40,17 +49,5 @@ public class MessagesController : BotController
         return Client.SendTextMessageAsync(Update.GetChatId(),
             "Test buttons",
             replyMarkup: _buttonsGenerationService.GetButtons());
-    }
-
-    [UnknownMessage]
-    public Task TestUnknownMessage()
-    {
-        return Client.SendTextMessageAsync(Update.GetChatId(), "Hmm... 🤔");
-    }
-
-    [UnknownUpdate]
-    public Task TestUnknownUpdate()
-    {
-        return Client.SendTextMessageAsync(Update.GetChatId(), "HMM... 🤔");
     }
 }
