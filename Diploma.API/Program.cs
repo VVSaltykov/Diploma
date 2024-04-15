@@ -26,6 +26,7 @@ public class Program
 
         builder.Services.AddTransient<UserRepository>();
         builder.Services.AddTransient<GroupRepository>();
+        builder.Services.AddTransient<MessagesRepository>();
 
         var app = builder.Build();
 

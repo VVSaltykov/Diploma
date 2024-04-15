@@ -16,6 +16,13 @@ public class AccountController : ControllerBase
         GroupRepository = groupRepository;
     }
     
+    [HttpGet("{chatId}")]
+    public async Task<User> Read(long chatId)
+    {
+        var user = await UserRepository.ReadFirst(u => u.ChatId == chatId);
+        return user;
+    }
+    
     [HttpPost]
     public async Task Registration([FromBody] RegistrationModel model)
     {

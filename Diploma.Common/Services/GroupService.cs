@@ -6,7 +6,7 @@ namespace Diploma.Common.Services;
 
 public class GroupService : IGroupService
 {
-    private IGroupService _groupService;
+    private readonly IGroupService _groupService;
 
     public GroupService(HttpClient httpClient)
     {

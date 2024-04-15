@@ -16,13 +16,15 @@ namespace Diploma.TgBot.Controllers;
 public class AccountController : BotController
 {
     private readonly IUsersActionsService _usersActionsService;
+    private readonly IInlineButtonsGenerationService _buttonsGenerationService;
 
     private static string phoneNumber;
     private static string name;
 
-    public AccountController(IUsersActionsService usersActionsService)
+    public AccountController(IUsersActionsService usersActionsService, IInlineButtonsGenerationService buttonsGenerationService)
     {
         _usersActionsService = usersActionsService;
+        _buttonsGenerationService = buttonsGenerationService;
     }
     
     [Message("/start")]
@@ -52,9 +54,11 @@ public class AccountController : BotController
     {
         try
         {
+            _buttonsGenerationService.SetInlineButtons("Отправить сообщение");
             await RegistrationHandler.RegistrationUser(BotContext.Update.GetChatId(), phoneNumber, name,
                 Update.Message.Text);
-            await Client.SendTextMessageAsync(BotContext.Update.GetChatId(), $"Вы теперь зарегистрированы!");
+            await Client.SendTextMessageAsync(BotContext.Update.GetChatId(), $"Вы теперь зарегистрированы!",
+                replyMarkup: _buttonsGenerationService.GetButtons());
         }
         catch (Exception ex) {}
     }

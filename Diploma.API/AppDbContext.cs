@@ -7,6 +7,7 @@ public class AppDbContext : DbContext
 {
     public DbSet<User> Users { get; set; }
     public DbSet<Group> Groups { get; set; }
+    public DbSet<Messages> Messages { get; set; }
     public AppDbContext(DbContextOptions<AppDbContext> options) : base(options)
     {
     }

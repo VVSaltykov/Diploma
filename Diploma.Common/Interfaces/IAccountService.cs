@@ -8,4 +8,7 @@ public interface IAccountService
 {
     [Post("/api/Account")]
     Task Registration([FromBody] RegistrationModel model);
+
+    [Get("/api/Account/{chatId}")]
+    Task<User> Read(long chatId);
 }
