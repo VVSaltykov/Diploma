@@ -46,33 +46,7 @@ public class MessageController : BotController
             if (answer == "Да") isAnonymous = true;
             if (answer == "Нет") isAnonymous = false;
 
-            MessagesService messagesService = SingletonService.GetMessagesService();
-            AccountService accountService = SingletonService.GetAccountService();
-
-            var user = await accountService.Read(BotContext.Update.GetChatId());
-    
-            Messages messages = new Messages
-            {
-                Tittle = tittle,
-                DateTime = DateTime.UtcNow,
-                IsAnonymous = isAnonymous,
-                UserId = user.Id
-            };
-
-            // Добавьте обработку исключений для получения подробных сообщений об ошибках
-            try
-            {
-                await messagesService.Create(messages);
-            }
-            catch (Refit.ValidationApiException ex)
-            {
-                var problemDetails = await ex.GetContentAsAsync<ProblemDetails>();
-
-                // Печатаем подробности ошибки
-                Console.WriteLine($"Validation error: {problemDetails.Title}");
-                Console.WriteLine($"Status: {problemDetails.Status}");
-                Console.WriteLine($"Detail: {problemDetails.Detail}");
-            }
+            await MessageHandler.SendMessage(BotContext.Update.GetChatId(), tittle, isAnonymous);
 
             await Client.SendTextMessageAsync(BotContext.Update.GetChatId(), $"Вы отправили сообщение");
         }
