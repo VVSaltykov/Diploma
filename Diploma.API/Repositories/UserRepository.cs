@@ -2,23 +2,12 @@
 
 namespace Diploma.API.Repositories;
 
-public class UserRepository
+public class UserRepository : BaseCRUDRepository<User, Guid>
 {
-    private readonly AppDbContext AppDbContext;
-
-    public UserRepository(AppDbContext appDbContext)
+    private readonly AppDbContext _appDbContext;
+    
+    public UserRepository(AppDbContext dbContext) : base(dbContext)
     {
-        AppDbContext = appDbContext;
-    }
-
-    public async Task Create(long chatId, string phoneNumber)
-    {
-        User user = new User
-        {
-            ChatId = chatId,
-            PhoneNumber = phoneNumber
-        };
-        AppDbContext.Users.Add(user);
-        await AppDbContext.SaveChangesAsync();
+        _appDbContext = dbContext;
     }
 }

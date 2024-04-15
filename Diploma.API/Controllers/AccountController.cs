@@ -8,15 +8,24 @@ namespace Diploma.API.Controllers;
 public class AccountController : ControllerBase
 {
     private readonly UserRepository UserRepository;
+    private readonly GroupRepository GroupRepository;
 
-    public AccountController(UserRepository userRepository)
+    public AccountController(UserRepository userRepository, GroupRepository groupRepository)
     {
         UserRepository = userRepository;
+        GroupRepository = groupRepository;
     }
     
-    [HttpPost("Registrate")]
-    public async Task Registrate([FromForm] RegistrationModel model)
+    [HttpPost]
+    public async Task Registration([FromBody] RegistrationModel model)
     {
-        await UserRepository.Create(model.ChatId, model.PhoneNumber);
+        User user = new User
+        {
+            ChatId = model.ChatId,
+            PhoneNumber = model.PhoneNumber,
+            Name = model.Name,
+            GroupId = model.GroupId
+        };
+        await UserRepository.Create(user);
     }
 }

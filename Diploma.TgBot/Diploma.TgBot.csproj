@@ -7,6 +7,7 @@
     </PropertyGroup>
 
     <ItemGroup>
+      <ProjectReference Include="..\Diploma.API\Diploma.API.csproj" />
       <ProjectReference Include="..\tg-bot-lib\src\TgBotLib.Core\TgBotLib.Core.csproj" />
     </ItemGroup>
 

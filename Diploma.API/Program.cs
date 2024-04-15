@@ -1,4 +1,5 @@
 using Diploma.API.Repositories;
+using Diploma.Common.Models;
 using Microsoft.EntityFrameworkCore;
 
 namespace Diploma.API;
@@ -11,7 +12,7 @@ public class Program
         
         builder.Services.AddDbContext<AppDbContext>(options =>
         {
-            options.UseSqlServer(builder.Configuration.GetConnectionString("CompetitionsWebDbConnection"));
+            options.UseNpgsql(builder.Configuration.GetConnectionString("CompetitionsWebDbConnection"));
         });
         
         // Add services to the container.
@@ -24,6 +25,7 @@ public class Program
         builder.Services.AddControllers();
 
         builder.Services.AddTransient<UserRepository>();
+        builder.Services.AddTransient<GroupRepository>();
 
         var app = builder.Build();
 

@@ -8,7 +8,7 @@ public class Program
     {
         var builder = WebApplication.CreateBuilder(args);
         
-        builder.Services.AddBotLibCore("5009457163:AAHK15woZY6hEh3KI2XDMP7m5VzxOjc0-k4");
+        builder.Services.AddBotLibCore(BotSettings.BotToken);
 
         var app = builder.Build();
 
