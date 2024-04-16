@@ -8,6 +8,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Diploma.Common", "Diploma.C
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TgBotLib.Core", "tg-bot-lib\src\TgBotLib.Core\TgBotLib.Core.csproj", "{21736E11-EB9B-4AA8-A2E1-2FBF12ACEE95}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Diploma.Web", "Diploma.Web\Diploma.Web.csproj", "{D03B0C3F-755B-4872-BAAF-54EAF38D0FF1}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -30,5 +32,9 @@ Global
 		{21736E11-EB9B-4AA8-A2E1-2FBF12ACEE95}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{21736E11-EB9B-4AA8-A2E1-2FBF12ACEE95}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{21736E11-EB9B-4AA8-A2E1-2FBF12ACEE95}.Release|Any CPU.Build.0 = Release|Any CPU
+		{D03B0C3F-755B-4872-BAAF-54EAF38D0FF1}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D03B0C3F-755B-4872-BAAF-54EAF38D0FF1}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D03B0C3F-755B-4872-BAAF-54EAF38D0FF1}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D03B0C3F-755B-4872-BAAF-54EAF38D0FF1}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal
