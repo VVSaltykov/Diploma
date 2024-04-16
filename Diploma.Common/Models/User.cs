@@ -1,7 +1,9 @@
 ﻿using System.ComponentModel.DataAnnotations.Schema;
+using System.Diagnostics.CodeAnalysis;
+using System.Text.Json.Serialization;
+using Diploma.Common.Utils;
 
 namespace Diploma.Common.Models;
-
 public class User : BaseEntity<Guid>
 {
     public string? Login { get; set; } = null;

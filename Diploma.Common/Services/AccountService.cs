@@ -18,10 +18,9 @@ public class AccountService : IAccountService
         await _accountService.Registration(model);
     }
 
-    public async Task<User> Read(long chatId)
+    public async Task<User?> Read(long chatId)
     {
-        User result = default;
-        result = await _accountService.Read(chatId);
-        return result;
+        var user = await _accountService.Read(chatId);
+        return user;
     }
 }

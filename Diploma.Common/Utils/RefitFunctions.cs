@@ -1,4 +1,5 @@
-﻿using Refit;
+﻿using Newtonsoft.Json;
+using Refit;
 
 namespace Diploma.Common.Utils;
 
@@ -8,7 +9,10 @@ public static class RefitFunctions
     {
         try
         {
-            return RestService.For<T>(httpClient);
+            return RestService.For<T>(httpClient, new RefitSettings
+            {
+                ContentSerializer = new NewtonsoftJsonContentSerializer(),
+            });
         }
         catch (Exception ex)
         {

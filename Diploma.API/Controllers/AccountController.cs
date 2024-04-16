@@ -17,7 +17,7 @@ public class AccountController : ControllerBase
     }
     
     [HttpGet("{chatId}")]
-    public async Task<User> Read(long chatId)
+    public async Task<User?> Read(long chatId)
     {
         var user = await UserRepository.ReadFirst(u => u.ChatId == chatId);
         return user;

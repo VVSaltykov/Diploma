@@ -42,13 +42,15 @@ public class MessageController : BotController
     {
         try
         {
+            _buttonsGenerationService.SetInlineButtons("Отправить сообщение");
             var answer = Update.Message.Text;
             if (answer == "Да") isAnonymous = true;
             if (answer == "Нет") isAnonymous = false;
 
             await MessageHandler.SendMessage(BotContext.Update.GetChatId(), tittle, isAnonymous);
 
-            await Client.SendTextMessageAsync(BotContext.Update.GetChatId(), $"Вы отправили сообщение");
+            await Client.SendTextMessageAsync(BotContext.Update.GetChatId(), $"Вы отправили сообщение",
+                replyMarkup: _buttonsGenerationService.GetButtons());
         }
         catch (Exception ex)
         {

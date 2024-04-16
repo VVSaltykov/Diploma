@@ -10,6 +10,7 @@ using Telegram.Bot;
 using Telegram.Bot.Types;
 using TgBotLib.Core;
 using TgBotLib.Core.Base;
+using User = Diploma.Common.Models.User;
 
 namespace Diploma.TgBot.Controllers;
 
@@ -18,6 +19,7 @@ public class AccountController : BotController
     private readonly IUsersActionsService _usersActionsService;
     private readonly IInlineButtonsGenerationService _buttonsGenerationService;
 
+    private static User? User;
     private static string phoneNumber;
     private static string name;
 
@@ -30,9 +32,28 @@ public class AccountController : BotController
     [Message("/start")]
     public async Task InitHandling()
     {
-        _usersActionsService.HandleUser(BotContext.Update.GetChatId(), nameof(AccountController));
-        await Client.SendTextMessageAsync(BotContext.Update.GetChatId(), "Отправьте свой контакт",
-        replyMarkup: ButtonsHelper.CreateButtonWithContactRequest("Поделиться контактом"));
+        try
+        {
+            AccountService accountService = SingletonService.GetAccountService();
+            User = await accountService.Read(BotContext.Update.GetChatId());
+            if (User == null)
+            {
+                _usersActionsService.HandleUser(BotContext.Update.GetChatId(), nameof(AccountController));
+                await Client.SendTextMessageAsync(BotContext.Update.GetChatId(), "Отправьте свой контакт",
+                    replyMarkup: ButtonsHelper.CreateButtonWithContactRequest("Поделиться контактом"));
+            }
+            else
+            {
+                _buttonsGenerationService.SetInlineButtons("Отправить сообщение");
+                await Client.SendTextMessageAsync(BotContext.Update.GetChatId(), "Отправьте сообщение",
+                    replyMarkup: _buttonsGenerationService.GetButtons());
+            } 
+        }
+        catch (Exception ex)
+        {
+            // Обработка других исключений
+            Console.WriteLine($"An error occurred: {ex.Message}");
+        }
     }
     
     [ActionStep(nameof(AccountController), 0)]
