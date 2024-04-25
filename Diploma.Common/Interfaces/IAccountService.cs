@@ -6,6 +6,8 @@ namespace Diploma.Common.Interfaces;
 
 public interface IAccountService
 {
+    [Post("/api/Account/Login")]
+    Task<User> Login(LoginModel loginModel);
     [Post("/api/Account")]
     Task Registration([FromBody] RegistrationModel model);
 

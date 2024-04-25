@@ -23,6 +23,14 @@ public class AccountController : ControllerBase
         return user;
     }
     
+    [HttpPost("Login")]
+    public async Task<User> Login(LoginModel loginModel)
+    {
+        var user = await UserRepository.ReadFirst(u =>
+            u.Login == loginModel.Login && u.Password == loginModel.Password);
+        return user;
+    }
+    
     [HttpPost]
     public async Task Registration([FromBody] RegistrationModel model)
     {

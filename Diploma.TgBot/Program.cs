@@ -11,7 +11,13 @@ public class Program
         builder.Services.AddBotLibCore(BotSettings.BotToken);
 
         var app = builder.Build();
-
+        
+        app.MapGet("/", (HttpContext context) =>
+        {
+            context.Response.StatusCode = 204; // No Content
+            return Task.CompletedTask;
+        });
+        
         app.Run();
     }
 }
