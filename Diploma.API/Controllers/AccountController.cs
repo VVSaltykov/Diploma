@@ -1,5 +1,8 @@
-﻿using Diploma.API.Repositories;
+﻿using System.Security.Claims;
+using Diploma.API.Repositories;
 using Diploma.Common.Models;
+using Microsoft.AspNetCore.Authentication;
+using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Diploma.API.Controllers;
@@ -28,7 +31,14 @@ public class AccountController : ControllerBase
     {
         var user = await UserRepository.ReadFirst(u =>
             u.Login == loginModel.Login && u.Password == loginModel.Password);
-        return user;
+        if (user != null)
+        {
+            return user;
+        }
+        else
+        {
+            return null;
+        }
     }
     
     [HttpPost]

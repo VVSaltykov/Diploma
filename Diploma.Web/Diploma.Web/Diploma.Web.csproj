@@ -17,4 +17,8 @@
     <ProjectReference Include="..\..\Diploma.Common\Diploma.Common.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <None Include="wwwroot\script.js" />
+  </ItemGroup>
+
 </Project>

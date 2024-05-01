@@ -1,5 +1,6 @@
 using Diploma.API.Repositories;
 using Diploma.Common.Models;
+using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.EntityFrameworkCore;
 
 namespace Diploma.API;
@@ -14,9 +15,6 @@ public class Program
         {
             options.UseNpgsql(builder.Configuration.GetConnectionString("CompetitionsWebDbConnection"));
         });
-        
-        // Add services to the container.
-        builder.Services.AddAuthorization();
 
         // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
         builder.Services.AddEndpointsApiExplorer();

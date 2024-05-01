@@ -1,9 +1,12 @@
 ﻿@page "/"
 @using Diploma.Common.Models
 @using Diploma.Common.Interfaces
+@using Diploma.Common.Services
 @inject IAccountService AccountService
 @inject NavigationManager NavigationManager
+@inject CookieService CookieService
 
+@layout EmptyLayout
 
 <div class="container" style="height: 100vh;">
     <div class="d-flex justify-content-center w-100 h-100">
@@ -44,6 +47,7 @@
         var response = await AccountService.Login(loginModel);
         if (response != null)
         {
+            await CookieService.SetCookies("token", response.Login);
             NavigationManager.NavigateTo("/Index");
         }
         else

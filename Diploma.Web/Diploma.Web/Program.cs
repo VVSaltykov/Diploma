@@ -15,6 +15,8 @@ namespace Diploma.Web
             {
                 client.BaseAddress = new Uri("https://localhost:7165");
             });
+
+            builder.Services.AddScoped<CookieService>();
             
             // Add services to the container.
             builder.Services.AddRazorPages();
