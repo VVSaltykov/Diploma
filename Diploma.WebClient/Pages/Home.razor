@@ -1,0 +1,30 @@
+﻿@page "/"
+@using Diploma.Common.Models
+@using Diploma.Common.Services
+@using Diploma.Common.Utils
+@using Microsoft.AspNetCore.Authorization
+@using Microsoft.AspNetCore.Components.Authorization
+
+@layout MainLayout
+@attribute [Authorize]
+
+<AuthorizeView>
+    <Authorized>
+        <h1>Hello, @(CurrentSession.User.Name)!</h1>
+        <button class="btn btn-primary" @onclick="LogoutAsync">Logout</button>
+    </Authorized>
+</AuthorizeView>
+
+@code {
+    [CascadingParameter]
+    public Session? CurrentSession { get; set; }
+
+    protected override async Task OnInitializedAsync()
+    {
+    }
+    
+    private async Task LogoutAsync()
+    {
+        // Perform logout logic here
+    }
+}

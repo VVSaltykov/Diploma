@@ -1,19 +1,18 @@
-﻿@inherits LayoutComponentBase
+﻿@using Diploma.Common.Models
+@using Diploma.Web.Pages
+@inherits LayoutComponentBase
 
-<PageTitle>Diploma.Web</PageTitle>
-
-<div class="page">
-    <div class="sidebar">
-        <NavMenu />
-    </div>
-
-    <main>
-        <div class="top-row px-4">
-            <a href="https://docs.microsoft.com/aspnet/" target="_blank">About</a>
+<AuthorizationLayout>
+    <Authorized>
+        <div class="page">
+            <main>
+                <article class="p-0">
+                    @Body
+                </article>
+            </main>
         </div>
-
-        <article class="content px-4">
-            @Body
-        </article>
-    </main>
-</div>
+    </Authorized>
+    <NotAuthorized>
+        <RedirectToLogin />
+    </NotAuthorized>
+</AuthorizationLayout>

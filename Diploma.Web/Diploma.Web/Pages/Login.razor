@@ -1,10 +1,15 @@
-﻿@page "/"
+﻿@page "/Login"
+@using Diploma.API.Services
 @using Diploma.Common.Models
 @using Diploma.Common.Interfaces
 @using Diploma.Common.Services
+@using Diploma.Web.Services
+@using Diploma.Web.Utils
 @inject IAccountService AccountService
 @inject NavigationManager NavigationManager
 @inject CookieService CookieService
+@inject SessionService SessionService
+@inject CookieAuthenticationStateProvider CookieAuthenticationStateProvider
 
 @layout EmptyLayout
 
@@ -44,16 +49,26 @@
 
     private async Task LoginAsync()
     {
-        var response = await AccountService.Login(loginModel);
-        if (response != null)
+        try
         {
-            await CookieService.SetCookies("token", response.Login);
-            NavigationManager.NavigateTo("/Index");
+            var user = await AccountService.Login(loginModel);
+            if (user != null)
+            {
+                var session = await SessionService.Create(user);
+                CookieService.SetCookies("token", session.Token); // Установка куки
+                await CookieAuthenticationStateProvider.SetAuthenticationState(session.User.Login);
+                StateHasChanged();
+                NavigationManager.NavigateTo("/");
+            }
+            else
+            {
+                IsLoginFailed = true;
+                // Add additional error handling code here
+            }
         }
-        else
+        catch (Exception ex)
         {
             IsLoginFailed = true;
-            // Add additional error handling code here
         }
     }
 }

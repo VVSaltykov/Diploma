@@ -1,7 +1,9 @@
 using Diploma.API.Repositories;
-using Diploma.Common.Models;
-using Microsoft.AspNetCore.Authentication.Cookies;
+using Diploma.API.Services;
+using Diploma.Common.Services;
+using Diploma.Common.ServicesForWeb;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.JSInterop;
 
 namespace Diploma.API;
 
@@ -16,15 +18,39 @@ public class Program
             options.UseNpgsql(builder.Configuration.GetConnectionString("CompetitionsWebDbConnection"));
         });
 
+        builder.Services.AddAuthentication("Cookies")
+            .AddCookie("Cookies", options =>
+            {
+                options.Cookie.Name = "token";
+                options.Cookie.Domain = "localhost:7099";
+                options.Cookie.Path = "/"; // Устанавливаем путь cookie
+            });
+        builder.Services.AddAuthorization();
+        
+        builder.Services.AddCors(options =>
+        {
+            options.AddDefaultPolicy(builder =>
+            {
+                builder.WithOrigins("http://localhost:5276")
+                    .AllowAnyHeader()
+                    .AllowAnyMethod();
+            });
+        });
+        
+        builder.Services.AddMemoryCache();
+
         // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
         builder.Services.AddEndpointsApiExplorer();
         builder.Services.AddSwaggerGen();
-
         builder.Services.AddControllers();
+        
 
+        builder.Services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
         builder.Services.AddTransient<UserRepository>();
         builder.Services.AddTransient<GroupRepository>();
         builder.Services.AddTransient<MessagesRepository>();
+        builder.Services.AddSingleton<SessionService>();
+        
 
         var app = builder.Build();
         
@@ -36,10 +62,12 @@ public class Program
         });
 
         app.UseHttpsRedirection();
-
+        app.UseAuthentication();
         app.UseAuthorization();
 
         app.MapControllers();
+        
+        app.UseCors();
 
         app.Run();
     }

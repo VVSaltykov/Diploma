@@ -1,0 +1,17 @@
+﻿@using Diploma.WebClient.Pages
+@inherits LayoutComponentBase
+
+<AuthorizationLayout>
+    <Authorized>
+        <div class="page">
+            <main>
+                <article class="p-0">
+                    @Body
+                </article>
+            </main>
+        </div>
+    </Authorized>
+    <NotAuthorized>
+        <RedirectToLogin />
+    </NotAuthorized>
+</AuthorizationLayout>

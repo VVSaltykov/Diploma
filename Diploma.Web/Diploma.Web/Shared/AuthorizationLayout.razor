@@ -1,0 +1,63 @@
+﻿@using Diploma.Common.Interfaces
+@using Diploma.Common.Models
+@using Diploma.Web.Services
+@using Diploma.Web.Utils
+@using Microsoft.AspNetCore.Components
+@inject CookieAuthenticationStateProvider CookieAuthenticationStateProvider
+
+
+<CascadingValue Value="UserData">
+    <CascadingAuthenticationState>
+        <AuthorizeView>
+            <Authorized>
+                @Authorized
+            </Authorized>
+            <NotAuthorized>
+                @NotAuthorized
+            </NotAuthorized>
+        </AuthorizeView>
+    </CascadingAuthenticationState>
+</CascadingValue>
+
+@code {
+
+    [Inject]
+    public SessionsService SessionService { get; set; }
+    
+    [Inject] IAccountService AccountService { get; set; }
+    
+    [Inject] CookieService CookieService { get; set; }
+
+    [Parameter]
+    public RenderFragment Authorized { get; set; }
+
+    [Parameter]
+    public RenderFragment NotAuthorized { get; set; }
+    
+    public User UserData { get; set; }
+    private bool isFirstRender;
+
+    protected override async Task OnInitializedAsync()
+    {
+        Console.WriteLine("234");
+        // var token = await CookieService.GetCookies("token");
+        // var session = await SessionService.ReadSession(token);
+        // if (session != null)
+        // {
+        //     UserData = session.User;
+        // }
+        // else
+        // {
+        //     UserData = null;
+        // }
+    }
+    
+    protected override void OnAfterRender(bool isFirstRender)
+    {
+        if (isFirstRender)
+        {
+            Console.WriteLine("123");
+            // Возможно, здесь вы хотите выполнить другие синхронные операции
+        }
+    }
+}

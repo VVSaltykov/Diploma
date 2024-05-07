@@ -1,8 +1,7 @@
-﻿using System.Security.Claims;
-using Diploma.API.Repositories;
+﻿using Diploma.API.Repositories;
+using Diploma.API.Services;
 using Diploma.Common.Models;
-using Microsoft.AspNetCore.Authentication;
-using Microsoft.AspNetCore.Authentication.Cookies;
+using Diploma.Common.Services;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Diploma.API.Controllers;
@@ -11,12 +10,12 @@ namespace Diploma.API.Controllers;
 public class AccountController : ControllerBase
 {
     private readonly UserRepository UserRepository;
-    private readonly GroupRepository GroupRepository;
+    private readonly SessionService SessionService;
 
-    public AccountController(UserRepository userRepository, GroupRepository groupRepository)
+    public AccountController(UserRepository userRepository, SessionService sessionService)
     {
         UserRepository = userRepository;
-        GroupRepository = groupRepository;
+        SessionService = sessionService;
     }
     
     [HttpGet("{chatId}")]
@@ -27,15 +26,32 @@ public class AccountController : ControllerBase
     }
     
     [HttpPost("Login")]
-    public async Task<User> Login(LoginModel loginModel)
+    public async Task<Session> Login(LoginModel loginModel)
     {
         var user = await UserRepository.ReadFirst(u =>
             u.Login == loginModel.Login && u.Password == loginModel.Password);
         if (user != null)
         {
-            return user;
+            user.Token = Guid.NewGuid().ToString();
+            var session = await SessionService.Create(user);
+            return session;
         }
         else
+        {
+            return null;
+        }
+    }
+    
+    [HttpPost("Authenticate")]
+    public async Task<Session> Authenticate()
+    {
+        try
+        {
+            var session = SessionService.ReadSession();
+            if (session != null) return session;
+            else return null;
+        }
+        catch (Exception ex)
         {
             return null;
         }

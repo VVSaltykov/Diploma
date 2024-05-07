@@ -1,0 +1,72 @@
+﻿@page "/Login"
+@using Diploma.Common.Models
+@using Diploma.Common.Interfaces
+@using Diploma.Common.ServicesForWeb
+@inject IAccountService AccountService
+@inject NavigationManager NavigationManager
+@inject CookieService CookieService
+@inject SessionsService SessionsService
+@inject HttpClient HttpClient
+
+@layout EmptyLayout
+
+<div class="container" style="height: 100vh;">
+    <div class="d-flex justify-content-center w-100 h-100">
+        <div class="frame align-self-center" style="width: 25rem;">
+            <div class="d-flex header mb-3">Вход</div>
+
+            <EditForm Model="@loginModel" OnSubmit="@LoginAsync" FormName="Name">
+                <div class="mb-3">
+                    @if (IsLoginFailed)
+                    {
+                    <ul class="validation-errors">
+                        <li class="validation-message">Неправильный логин или пароль</li>
+                    </ul>
+                    }
+                </div>
+                <div class="mb-3">
+                    <input placeholder="логин" id="name" class="form-control" @bind="loginModel.Login" />
+                </div>
+
+                <div class="mb-3">
+                    <input placeholder="пароль" type="password" id="password" class="form-control" @bind="loginModel.Password" />
+                </div>
+
+                <div class="d-flex justify-content-center w-100 h-100">
+                    <button type="submit" class="btn btn-primary login-button" @onclick="() => IsLoginFailed = false">Войти</button>
+                </div>
+            </EditForm>
+        </div>
+    </div>
+</div>
+
+@code {
+    private LoginModel loginModel { get; set; } = new LoginModel();
+    private bool IsLoginFailed { get; set; } = false;
+
+    private async Task LoginAsync()
+    {
+        try
+        {
+            var session = await AccountService.Login(loginModel);
+            if (session != null)
+            {
+                CookieService.SetCookies("token", session.Token); // Установка куки
+                
+                HttpClient.DefaultRequestHeaders.Add("AuthorizationToken", session.Token);
+                
+                await SessionsService.RefreshSession();
+                NavigationManager.NavigateTo("/");
+            }
+            else
+            {
+                IsLoginFailed = true;
+                // Add additional error handling code here
+            }
+        }
+        catch (Exception ex)
+        {
+            IsLoginFailed = true;
+        }
+    }
+}

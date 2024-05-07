@@ -1,0 +1,12 @@
+﻿@page "/logout"
+
+@code {
+
+    [Inject]
+    protected NavigationManager navigationManager { get; set; }
+
+    protected override async Task OnInitializedAsync()
+    {
+        navigationManager.NavigateTo("/Login");
+    }
+}

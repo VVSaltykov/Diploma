@@ -1,6 +1,8 @@
-﻿using Diploma.Common.Interfaces;
+﻿using System.Security.Claims;
+using Diploma.Common.Interfaces;
 using Diploma.Common.Models;
 using Diploma.Common.Utils;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Diploma.Common.Services;
@@ -14,10 +16,17 @@ public class AccountService : IAccountService
         _accountService = RefitFunctions.GetRefitService<IAccountService>(httpClient);
     }
 
-    public async Task<User> Login(LoginModel loginModel)
+    public async Task<Session> Login(LoginModel loginModel)
     {
-        var user = await _accountService.Login(loginModel);
-        return user;
+        try
+        {
+            var session = await _accountService.Login(loginModel);
+            return session;
+        }
+        catch (Exception ex)
+        {
+            return null;
+        }
     }
 
     public async Task Registration(RegistrationModel model)
@@ -29,5 +38,19 @@ public class AccountService : IAccountService
     {
         var user = await _accountService.Read(chatId);
         return user;
+    }
+
+    public async Task<Session> Authenticate()
+    {
+        try
+        {
+            var session = await _accountService.Authenticate();
+            return session;
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Unexpected Exception: {ex.Message}");
+            throw;
+        }
     }
 }

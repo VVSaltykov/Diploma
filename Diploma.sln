@@ -8,7 +8,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Diploma.Common", "Diploma.C
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TgBotLib.Core", "tg-bot-lib\src\TgBotLib.Core\TgBotLib.Core.csproj", "{21736E11-EB9B-4AA8-A2E1-2FBF12ACEE95}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Diploma.Web", "Diploma.Web\Diploma.Web\Diploma.Web.csproj", "{374666E0-0F5F-4D0D-B730-F28C19D100A4}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Diploma.WebClient", "Diploma.WebClient\Diploma.WebClient.csproj", "{4AC863FB-EA57-4A6B-80E5-86EE15907B56}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -32,9 +32,9 @@ Global
 		{21736E11-EB9B-4AA8-A2E1-2FBF12ACEE95}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{21736E11-EB9B-4AA8-A2E1-2FBF12ACEE95}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{21736E11-EB9B-4AA8-A2E1-2FBF12ACEE95}.Release|Any CPU.Build.0 = Release|Any CPU
-		{374666E0-0F5F-4D0D-B730-F28C19D100A4}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{374666E0-0F5F-4D0D-B730-F28C19D100A4}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{374666E0-0F5F-4D0D-B730-F28C19D100A4}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{374666E0-0F5F-4D0D-B730-F28C19D100A4}.Release|Any CPU.Build.0 = Release|Any CPU
+		{4AC863FB-EA57-4A6B-80E5-86EE15907B56}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{4AC863FB-EA57-4A6B-80E5-86EE15907B56}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{4AC863FB-EA57-4A6B-80E5-86EE15907B56}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{4AC863FB-EA57-4A6B-80E5-86EE15907B56}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal
