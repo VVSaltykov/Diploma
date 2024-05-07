@@ -27,12 +27,13 @@ public class Program
         
         builder.Services.AddAuthorizationCore();
         
-        builder.Services.AddSingleton<IAccountService, AccountService>(sp =>
+        
+
+// Настраиваем HttpClient после его создания, добавляя к нему CookieHandler
+        builder.Services.AddHttpClient<IAccountService, AccountService>("API", client =>
         {
-            var httpClient = sp.GetRequiredService<HttpClient>();
-            httpClient.BaseAddress = new Uri("https://localhost:7165");
-            return new AccountService(httpClient);
-        });
+            client.BaseAddress = new Uri("https://localhost:7165");
+        }).AddHttpMessageHandler<CookieHandler>();
         
         builder.Services.AddScoped<CookieService>();
         builder.Services.AddScoped<AuthenticationStateProvider>(provider => provider.GetRequiredService<CookieAuthenticationStateProvider>());

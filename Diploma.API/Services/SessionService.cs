@@ -54,7 +54,25 @@ public class SessionService
     
     private string GetKey(HttpContext context)
     {
-        return context.Request.Headers["AuthorizationToken"];
+        // Получаем строку заголовка Authorization
+        string authorizationHeader = context.Request.Headers["Authorization"];
+
+        // Проверяем, что заголовок Authorization присутствует и не является пустым
+        if (!string.IsNullOrEmpty(authorizationHeader))
+        {
+            // Разделяем строку заголовка на части по пробелу
+            string[] parts = authorizationHeader.Trim().Split(' ');
+
+            // Проверяем, что заголовок имеет правильный формат "Bearer <token>"
+            if (parts.Length == 2 && parts[0].Equals("Bearer", StringComparison.OrdinalIgnoreCase))
+            {
+                // Возвращаем токен из второй части
+                return parts[1];
+            }
+        }
+
+        // Возвращаем null, если заголовок не найден или имеет неправильный формат
+        return null;
     }
 
     private void DeleteExpiredSessions()
