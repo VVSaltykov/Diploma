@@ -20,4 +20,10 @@ public class MessagesService : IMessagesService
     {
         return _messagesService.Create(messages);
     }
+
+    public async Task<List<Messages>> GetAll()
+    {
+        var messages = await _messagesService.GetAll();
+        return messages;
+    }
 }

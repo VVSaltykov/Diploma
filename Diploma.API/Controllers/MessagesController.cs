@@ -33,4 +33,18 @@ public class MessagesController : ControllerBase
         }
         catch (Exception ex) {}
     }
+    
+    [HttpPost("GetAll")]
+    public async Task<List<Messages>> GetAll()
+    {
+        try
+        {
+            List<Messages> messages = (await _messagesRepository.Read(include: m => m.User)).ToList();
+            return messages;
+        }
+        catch (Exception ex)
+        {
+            return null;
+        }
+    }
 }
