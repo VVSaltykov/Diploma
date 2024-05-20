@@ -1,6 +1,10 @@
-﻿using Diploma.API.Repositories;
+﻿using System.Text;
+using Diploma.API.Data;
+using Diploma.API.Repositories;
 using Diploma.Common.Models;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.SignalR;
+using Newtonsoft.Json;
 
 namespace Diploma.API.Controllers;
 
@@ -25,11 +29,15 @@ public class MessagesController : ControllerBase
             Messages _messages = new Messages
             {
                 Tittle = messages.Tittle,
-                DateTime = messages.DateTime,
+                DateTime = DateTime.UtcNow,
                 IsAnonymous = messages.IsAnonymous,
-                UserId = messages.UserId
+                UserId = messages.UserId,
+                RecepientId = messages.RecepientId
             };
             await _messagesRepository.Create(_messages);
+            
+            var hubContext = HttpContext.RequestServices.GetRequiredService<IHubContext<MessageHub>>();
+            await hubContext.Clients.All.SendAsync("ReceiveMessage", _messages);
         }
         catch (Exception ex) {}
     }
@@ -46,5 +54,9 @@ public class MessagesController : ControllerBase
         {
             return null;
         }
+    }
+    
+    private async Task SendMessageToBot(Messages message)
+    {
     }
 }

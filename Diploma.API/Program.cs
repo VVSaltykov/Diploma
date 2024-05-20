@@ -1,3 +1,4 @@
+using Diploma.API.Data;
 using Diploma.API.Repositories;
 using Diploma.API.Services;
 using Diploma.Common.Services;
@@ -18,6 +19,8 @@ public class Program
             options.UseNpgsql(builder.Configuration.GetConnectionString("CompetitionsWebDbConnection"));
         });
 
+        builder.Services.AddSignalR();
+        
         builder.Services.AddAuthentication("Cookies")
             .AddCookie("Cookies", options =>
             {
@@ -31,7 +34,7 @@ public class Program
         {
             options.AddDefaultPolicy(builder =>
             {
-                builder.WithOrigins("http://localhost:5276")
+                builder.WithOrigins("https://localhost:7099")
                     .AllowAnyHeader()
                     .AllowAnyMethod();
             });
@@ -62,12 +65,19 @@ public class Program
         });
 
         app.UseHttpsRedirection();
+
+        app.UseCors(); // CORS should be used before routing
+
+        app.UseRouting(); // UseRouting should be called before other middlewares
+
         app.UseAuthentication();
         app.UseAuthorization();
 
-        app.MapControllers();
-        
-        app.UseCors();
+        app.UseEndpoints(endpoints =>
+        {
+            endpoints.MapControllers();
+            endpoints.MapHub<MessageHub>("/messageHub");
+        });
 
         app.Run();
     }

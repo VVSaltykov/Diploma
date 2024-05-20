@@ -1,15 +1,21 @@
 ﻿@page "/"
+@using System.Security.Claims
+@using Diploma.Common.Interfaces
 @using Diploma.Common.Models
 @using Diploma.Common.Services
-@using Diploma.Common.Utils
+@using Diploma.WebClient.Pages.Modals
 @using Microsoft.AspNetCore.Authorization
 @using Microsoft.AspNetCore.Components.Authorization
+@inject DialogService DialogService
+@inject IUserService UserService
+@inject AuthenticationStateProvider AuthenticationStateProvider
 
 @layout MainLayout
 @attribute [Authorize]
 
 <AuthorizeView>
     <Authorized>
+        <RadzenButton Text="Отправить сообщение" Click="@OpenSendMessageDialog"/>
         <div class="rz-m-1 rz-mb-0" style="width: 98%; height: 98%">
             <RadzenGrid Data="@MessagesList" TItem="Messages" EmptyText="Нет сообщений">
                 <Columns>
@@ -38,13 +44,32 @@
     [Inject] protected MessagesService MessagesService { get; set; }
     
     private List<Messages> MessagesList { get; set; }
+    private List<User> TelegramUsers { get; set; } = new List<User>();
     
     bool allowVirtualization;
 
     protected override async Task OnInitializedAsync()
     {
         MessagesList = await MessagesService.GetAll();
+        TelegramUsers = await UserService.GetTelegramUsers();
         StateHasChanged();
+    }
+
+    private async Task OpenSendMessageDialog()
+    {
+        var parameters = new Dictionary<string, object>
+        {
+            { "Messages", new Messages() },
+            { "TelegramUsers", TelegramUsers }
+        };
+        
+        var result = await DialogService.OpenAsync<SendMessage>("Отправить сообщение", parameters);
+        if (result != null)
+        {
+            Messages newMessage = (Messages)result;
+            newMessage.UserId = CurrentSession.User.Id;
+            await MessagesService.Create(newMessage);
+        }
     }
     
     private async Task LogoutAsync()

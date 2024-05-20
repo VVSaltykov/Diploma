@@ -16,7 +16,6 @@ public static class MessageHandler
         Messages messages = new Messages
         {
             Tittle = tittle,
-            DateTime = DateTime.UtcNow,
             IsAnonymous = isAnonymous,
             UserId = user.Id
         };

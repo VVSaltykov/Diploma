@@ -1,0 +1,37 @@
+﻿@using Diploma.Common.Interfaces
+@using Diploma.Common.Models
+@layout MainLayout
+@inject DialogService DialogService
+
+<RadzenTemplateForm TItem="Messages" Data="@Messages" Submit="@OnSubmit">
+    <div class="row" style="margin-bottom: 16px">
+        <div class="col-md-3">
+            <RadzenLabel Text="Текст"/>
+        </div>
+        <div class="col">
+            <RadzenTextBox @bind-Value="@Messages.Tittle" Name="Tittle"/>
+        </div>
+    </div>
+    <div class="row" style="margin-bottom: 16px">
+        <div class="col-md-3">
+            <RadzenLabel Text="Пользователь Telegram"/>
+        </div>
+        <div class="col">
+            <RadzenDropDown @bind-Value="@Messages.RecepientId" Data="@TelegramUsers" TextProperty="Name" ValueProperty="ChatId" Name="TelegramUser"/>
+        </div>
+    </div>
+    <div class="row justify-content-center">
+        <div class="col-md-3"></div>
+        <div class="col-md-6 text-center">
+            <RadzenButton ButtonType="ButtonType.Submit" Text="Сохранить!"/>
+        </div>
+        <div class="col-md-3"></div>
+    </div>
+</RadzenTemplateForm>
+
+@code {
+    [Parameter] public Messages Messages { get; set; }
+    [Parameter] public List<User> TelegramUsers { get; set; }
+
+private void OnSubmit(Messages model) => DialogService.Close(model);
+}

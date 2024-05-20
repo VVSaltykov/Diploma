@@ -11,7 +11,7 @@ public class User : BaseEntity<Guid>
     public string Name { get; set; }
     public string PhoneNumber { get; set; }
     public long? ChatId { get; set; }
-    public string Token { get; set; }
+    public string? Token { get; set; }
     
     public int GroupId { get; set; }
     [ForeignKey("GroupId")]
