@@ -43,11 +43,16 @@ public class MessagesController : ControllerBase
     }
     
     [HttpPost("GetAll")]
-    public async Task<List<Messages>> GetAll()
+    public async Task<List<Messages>> GetAll(List<User> TelegramUsers)
     {
         try
         {
-            List<Messages> messages = (await _messagesRepository.Read(include: m => m.User)).ToList();
+            List<Messages> messages = new List<Messages>();
+            foreach (var telegramUser in TelegramUsers)
+            {
+                var message = (await _messagesRepository.Read(m => m.UserId == telegramUser.Id, m => m.User)).ToList();
+                messages.AddRange(message);
+            }
             return messages;
         }
         catch (Exception ex)

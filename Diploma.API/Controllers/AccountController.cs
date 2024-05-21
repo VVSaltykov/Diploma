@@ -11,11 +11,13 @@ namespace Diploma.API.Controllers;
 public class AccountController : ControllerBase
 {
     private readonly UserRepository UserRepository;
+    private readonly GroupRepository GroupRepository;
     private readonly SessionService SessionService;
 
-    public AccountController(UserRepository userRepository, SessionService sessionService)
+    public AccountController(UserRepository userRepository, GroupRepository groupRepository, SessionService sessionService)
     {
         UserRepository = userRepository;
+        GroupRepository = groupRepository;
         SessionService = sessionService;
     }
     
@@ -74,12 +76,14 @@ public class AccountController : ControllerBase
         }
         else
         {
+            var group = await GroupRepository.ReadFirst(g => g.Id == model.GroupId);
             User user = new User
             {
                 ChatId = model.ChatId,
                 PhoneNumber = model.PhoneNumber,
                 Name = model.Name,
                 GroupId = model.GroupId,
+                Group = group,
                 Role = model.Role
             };
             await UserRepository.Create(user);

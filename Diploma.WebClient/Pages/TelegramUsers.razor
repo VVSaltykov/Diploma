@@ -1,0 +1,44 @@
+﻿@page "/TelegramUsers"
+@using Diploma.Common.Models
+@using Diploma.Common.Interfaces
+@using Microsoft.AspNetCore.Authorization
+@using Microsoft.AspNetCore.Components.Authorization
+@inject IUserService UserService
+
+@layout MainLayout
+@attribute [Authorize]
+
+<AuthorizeView>
+    <Authorized>
+        <div class="rz-m-1 rz-mb-0" style="width: 98%; height: 98%">
+            <RadzenGrid Data="@UsersTelegram" TItem="User" EmptyText="Нет пользователей">
+                <Columns>
+                    <RadzenGridColumn TItem="User" Property="Name" Title="ФИО"/>
+                    <RadzenGridColumn TItem="User" Property="PhoneNumber" Title="Номер телефона"/>
+                    <RadzenGridColumn TItem="User" Property="Role" Title="Роль">
+                        <Template Context="user">
+                            @user.Role
+                        </Template>
+                    </RadzenGridColumn>
+                    <RadzenGridColumn TItem="User" Title="Группа">
+                        <Template Context="user">
+                            @user.Group.Name
+                        </Template>
+                    </RadzenGridColumn>
+                </Columns>
+            </RadzenGrid>
+        </div>
+    </Authorized>
+</AuthorizeView>
+
+@code {
+    [CascadingParameter]
+    public Session? CurrentSession { get; set; }
+    
+    private List<User> UsersTelegram { get; set; }
+
+    protected override async Task OnInitializedAsync()
+    {
+        UsersTelegram = await UserService.GetTelegramUsers();
+    }
+}

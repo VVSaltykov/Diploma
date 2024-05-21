@@ -27,7 +27,7 @@ public class GroupController : ControllerBase
         await _groupRepository.Create(group);
     }
     
-    [HttpGet("{name}")]
+    [HttpPost("{name}")]
     public async Task<Group> Read(string name)
     {
         Group group = await _groupRepository.GetGroupByName(name);

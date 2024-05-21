@@ -11,7 +11,10 @@ public static class RefitFunctions
         {
             return RestService.For<T>(httpClient, new RefitSettings
             {
-                ContentSerializer = new NewtonsoftJsonContentSerializer(),
+                ContentSerializer = new NewtonsoftJsonContentSerializer(new JsonSerializerSettings
+                {
+                    ReferenceLoopHandling = ReferenceLoopHandling.Ignore
+                })
             });
         }
         catch (Exception ex)

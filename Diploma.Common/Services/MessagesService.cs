@@ -21,9 +21,9 @@ public class MessagesService : IMessagesService
         return _messagesService.Create(messages);
     }
 
-    public async Task<List<Messages>> GetAll()
+    public async Task<List<Messages>> GetAll(List<User> TelegramUsers)
     {
-        var messages = await _messagesService.GetAll();
+        var messages = await _messagesService.GetAll(TelegramUsers);
         return messages;
     }
 }

@@ -9,5 +9,5 @@ public interface IMessagesService
     [Post("/api/Messages")]
     Task Create([FromBody] Messages messages);
     [Post("/api/Messages/GetAll")]
-    Task<List<Messages>> GetAll();
+    Task<List<Messages>> GetAll(List<User> TelegramUsers);
 }

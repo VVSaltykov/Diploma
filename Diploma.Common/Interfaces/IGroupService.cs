@@ -9,6 +9,6 @@ public interface IGroupService
     [Post("/api/Group")]
     Task Create([FromBody] Group group);
 
-    [Get("/api/Group/{name}")]
+    [Post("/api/Group/{name}")]
     Task<Group> Read(string name);
 }

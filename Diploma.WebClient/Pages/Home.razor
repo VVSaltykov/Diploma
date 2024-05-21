@@ -21,7 +21,7 @@
                 <Columns>
                     <RadzenGridColumn TItem="Messages" Property="Tittle" Title="Название"/>
                     <RadzenGridColumn TItem="Messages" Property="DateTime" Title="Дата отправки"/>
-                    <RadzenGridColumn TItem="Messages" Property="Category" Title="Отправитель">
+                    <RadzenGridColumn TItem="Messages" Title="Отправитель">
                         <Template Context="message">
                             @message.User.Name
                         </Template>
@@ -44,14 +44,14 @@
     [Inject] protected MessagesService MessagesService { get; set; }
     
     private List<Messages> MessagesList { get; set; }
-    private List<User> TelegramUsers { get; set; } = new List<User>();
+    private List<User> UsersTelegram { get; set; } = new List<User>();
     
     bool allowVirtualization;
 
     protected override async Task OnInitializedAsync()
     {
-        MessagesList = await MessagesService.GetAll();
-        TelegramUsers = await UserService.GetTelegramUsers();
+        UsersTelegram = await UserService.GetTelegramUsers();
+        MessagesList = await MessagesService.GetAll(UsersTelegram);
         StateHasChanged();
     }
 
@@ -60,7 +60,7 @@
         var parameters = new Dictionary<string, object>
         {
             { "Messages", new Messages() },
-            { "TelegramUsers", TelegramUsers }
+            { "TelegramUsers", UsersTelegram }
         };
         
         var result = await DialogService.OpenAsync<SendMessage>("Отправить сообщение", parameters);
