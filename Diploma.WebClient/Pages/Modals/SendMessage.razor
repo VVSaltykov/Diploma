@@ -25,11 +25,11 @@
                         <RadzenDropDown @bind-Value="model.SelectedUserId" Data="@TelegramUsers" TextProperty="Name" ValueProperty="ChatId" Name="TelegramUser" Change="@(args => OnUserChanged(model, args))" />
                     </div>
                     <div class="col">
-                        <RadzenButton Text="Удалить" Click="@(() => RemoveUserDropdown(model))" />
+                        <RadzenButton Text="Удалить" Icon="delete" ButtonStyle="ButtonStyle.Danger" Size="ButtonSize.Small" class="rz-border-radius-10 rz-shadow-10" Click="@(() => RemoveUserDropdown(model))" />
                     </div>
                 </div>
             }
-            <RadzenButton Text="Добавить пользователя" Click="@AddUserDropdown" />
+            <RadzenButton Text="Добавить ещё..." Icon="add" ButtonStyle="ButtonStyle.Primary" Size="ButtonSize.Small" class="rz-border-radius-10 rz-shadow-10" Click="@AddUserDropdown" />
         </div>
     </div>
     <div class="row" style="margin-bottom: 16px">
@@ -44,17 +44,17 @@
                         <RadzenDropDown @bind-Value="model.SelectedGroupId" Data="@Groups" TextProperty="Name" ValueProperty="Id" Name="Group" Change="@(args => OnGroupChanged(model, args))" />
                     </div>
                     <div class="col">
-                        <RadzenButton Text="Удалить" Click="@(() => RemoveGroupDropdown(model))" />
+                        <RadzenButton Text="Удалить" Icon="delete" ButtonStyle="ButtonStyle.Danger" Size="ButtonSize.Small" class="rz-border-radius-10 rz-shadow-10" Click="@(() => RemoveGroupDropdown(model))" />
                     </div>
                 </div>
             }
-            <RadzenButton Text="Добавить группу" Click="@AddGroupDropdown" />
+            <RadzenButton Text="Добавить ещё..." Icon="add" ButtonStyle="ButtonStyle.Primary" Size="ButtonSize.Small" class="rz-border-radius-10 rz-shadow-10" Click="@AddGroupDropdown" />
         </div>
     </div>
     <div class="row justify-content-center">
         <div class="col-md-3"></div>
         <div class="col-md-6 text-center">
-            <RadzenButton ButtonType="ButtonType.Submit" Text="Сохранить!"/>
+            <RadzenButton ButtonType="ButtonType.Submit" Icon="check_circle" ButtonStyle="ButtonStyle.Success" Text="Отправить!"/>
         </div>
         <div class="col-md-3"></div>
     </div>
