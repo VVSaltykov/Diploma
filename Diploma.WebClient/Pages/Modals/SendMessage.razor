@@ -18,18 +18,37 @@
             <RadzenLabel Text="Пользователь Telegram"/>
         </div>
         <div class="col">
-            @foreach (var model in dropDownModels)
+            @foreach (var model in userDropDownModels)
             {
-            <div class="row" style="margin-bottom: 16px">
-                <div class="col">
-                    <RadzenDropDown @bind-Value="model.SelectedUserId" Data="@TelegramUsers" TextProperty="Name" ValueProperty="ChatId" Name="TelegramUser" Change="@(args => OnUserChanged(model, args))" />
+                <div class="row" style="margin-bottom: 16px">
+                    <div class="col">
+                        <RadzenDropDown @bind-Value="model.SelectedUserId" Data="@TelegramUsers" TextProperty="Name" ValueProperty="ChatId" Name="TelegramUser" Change="@(args => OnUserChanged(model, args))" />
+                    </div>
+                    <div class="col">
+                        <RadzenButton Text="Удалить" Click="@(() => RemoveUserDropdown(model))" />
+                    </div>
                 </div>
-                <div class="col">
-                    <RadzenButton Text="Удалить" Click="@(() => RemoveUserDropdown(model))" />
-                </div>
-            </div>
             }
             <RadzenButton Text="Добавить пользователя" Click="@AddUserDropdown" />
+        </div>
+    </div>
+    <div class="row" style="margin-bottom: 16px">
+        <div class="col-md-3">
+            <RadzenLabel Text="Группа"/>
+        </div>
+        <div class="col">
+            @foreach (var model in groupDropDownModels)
+            {
+                <div class="row" style="margin-bottom: 16px">
+                    <div class="col">
+                        <RadzenDropDown @bind-Value="model.SelectedGroupId" Data="@Groups" TextProperty="Name" ValueProperty="Id" Name="Group" Change="@(args => OnGroupChanged(model, args))" />
+                    </div>
+                    <div class="col">
+                        <RadzenButton Text="Удалить" Click="@(() => RemoveGroupDropdown(model))" />
+                    </div>
+                </div>
+            }
+            <RadzenButton Text="Добавить группу" Click="@AddGroupDropdown" />
         </div>
     </div>
     <div class="row justify-content-center">
@@ -46,22 +65,32 @@
     [Parameter] public List<User> TelegramUsers { get; set; }
     [Parameter] public List<Group> Groups { get; set; }
     
-    private List<DropDownModel> dropDownModels = new List<DropDownModel> { new DropDownModel() };
+    private List<DropDownModel> userDropDownModels = new List<DropDownModel> { new DropDownModel() };
+    private List<GroupDropDownModel> groupDropDownModels = new List<GroupDropDownModel> { new GroupDropDownModel() };
 
     private void SubmitForm(Messages model)
     {
-        model.RecepientIds = dropDownModels.Select(m => (long?)m.SelectedUserId).Distinct().ToList();
+        var selectedUserIds = userDropDownModels.Select(m => (long?)m.SelectedUserId).Distinct();
+        var selectedGroupUserIds = groupDropDownModels
+                                    .SelectMany(m => Groups.FirstOrDefault(g => g.Id == m.SelectedGroupId)?.Users)
+                                    .Where(u => u != null)
+                                    .Select(u => (long?)u.ChatId)
+                                    .Distinct();
+
+        model.RecepientIds = selectedUserIds
+                            .Union(selectedGroupUserIds)
+                            .ToList();
         DialogService.Close(model);
     }
     
     private void AddUserDropdown()
     {
-        dropDownModels.Add(new DropDownModel());
+        userDropDownModels.Add(new DropDownModel());
     }
 
     private void RemoveUserDropdown(DropDownModel model)
     {
-        dropDownModels.Remove(model);
+        userDropDownModels.Remove(model);
     }
 
     private void OnUserChanged(DropDownModel model, object value)
@@ -69,8 +98,28 @@
         model.SelectedUserId = (long)value;
     }
 
+    private void AddGroupDropdown()
+    {
+        groupDropDownModels.Add(new GroupDropDownModel());
+    }
+
+    private void RemoveGroupDropdown(GroupDropDownModel model)
+    {
+        groupDropDownModels.Remove(model);
+    }
+
+    private void OnGroupChanged(GroupDropDownModel model, object value)
+    {
+        model.SelectedGroupId = (int)value;
+    }
+
     private class DropDownModel
     {
         public long SelectedUserId { get; set; }
+    }
+
+    private class GroupDropDownModel
+    {
+        public int SelectedGroupId { get; set; }
     }
 }
