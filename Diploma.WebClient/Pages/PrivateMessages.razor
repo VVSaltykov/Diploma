@@ -1,4 +1,4 @@
-﻿@page "/"
+﻿@page "/PrivateMessages"
 @using Diploma.Common.Interfaces
 @using Diploma.Common.Models
 @using Diploma.Common.Services
@@ -55,7 +55,7 @@
         {
             Groups = await GroupService.GetAll();
             UsersTelegram = await UserService.GetTelegramUsers();
-            MessagesList = await MessagesService.GetAll(UsersTelegram);
+            MessagesList = await MessagesService.GetPrivateMessages(CurrentSession.User.Id);
             StateHasChanged();
         }
         catch (Exception ex) {}

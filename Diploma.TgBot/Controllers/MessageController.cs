@@ -16,6 +16,7 @@ public class MessageController : BotController
     private readonly IUsersActionsService _usersActionsService;
 
     private static string tittle;
+    private static string text;
     private static bool isAnonymous;
     
     public MessageController(IUsersActionsService usersActionsService, IInlineButtonsGenerationService buttonsGenerationService)
@@ -24,22 +25,29 @@ public class MessageController : BotController
         _buttonsGenerationService = buttonsGenerationService;
     }
     
-    [Callback("Отправить сообщение")]
+    [Message("Отправить сообщение")]
     public async Task InitHandling()
     {
         _usersActionsService.HandleUser(BotContext.Update.GetChatId(), nameof(MessageController));
-        await Client.SendTextMessageAsync(BotContext.Update.GetChatId(), "Отправьте сообщение");
+        await Client.SendTextMessageAsync(BotContext.Update.GetChatId(), "Напишите заголовок");
     }
     
     [ActionStep(nameof(MessageController), 0)]
     public async Task FirstStep()
     {
         tittle = Update.Message.Text;
+        await Client.SendTextMessageAsync(BotContext.Update.GetChatId(), $"Напишите сообщение");
+    }
+    
+    [ActionStep(nameof(MessageController), 1)]
+    public async Task SecondStep()
+    {
+        text = Update.Message.Text;
         await Client.SendTextMessageAsync(BotContext.Update.GetChatId(), $"Вы хотите отправить сообщение анонимно?");
     }
 
-    [ActionStep(nameof(MessageController), 1)]
-    public async Task SecondStep()
+    [ActionStep(nameof(MessageController), 2)]
+    public async Task ThirdStep()
     {
         try
         {
@@ -48,7 +56,7 @@ public class MessageController : BotController
             if (answer == "Да") isAnonymous = true;
             if (answer == "Нет") isAnonymous = false;
 
-            await MessageHandler.SendMessage(BotContext.Update.GetChatId(), tittle, isAnonymous);
+            await MessageHandler.SendMessage(BotContext.Update.GetChatId(), tittle, text, isAnonymous);
 
             await Client.SendTextMessageAsync(BotContext.Update.GetChatId(), $"Вы отправили сообщение",
                 replyMarkup: _buttonsGenerationService.GetButtons());

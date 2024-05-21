@@ -25,7 +25,11 @@ public class Program
         });
         builder.Services.AddSingleton<SessionsService>();
         
-        builder.Services.AddAuthorizationCore();
+        builder.Services.AddAuthorizationCore(config =>
+        {
+            config.AddPolicy("AdminOnly", policy => policy.RequireRole("Admin"));
+            config.AddPolicy("ProfessorOnly", policy => policy.RequireRole("Professor"));
+        });
         
         builder.Services.AddScoped<Radzen.DialogService>();
         builder.Services.AddScoped<Radzen.NotificationService>();

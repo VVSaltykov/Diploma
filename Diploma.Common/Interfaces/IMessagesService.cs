@@ -10,4 +10,7 @@ public interface IMessagesService
     Task Create([FromBody] Messages messages);
     [Post("/api/Messages/GetAll")]
     Task<List<Messages>> GetAll(List<User> TelegramUsers);
+
+    [Post("/api/Messages/GetPrivateMessages")]
+    Task<List<Messages>> GetPrivateMessages(Guid userId);
 }

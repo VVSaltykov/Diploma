@@ -10,4 +10,7 @@ public interface IUserService
     
     [Post("/api/User/WebUsers")]
     Task<List<User>> GetWebUsers();
+
+    [Post("/api/User/Professor")]
+    Task<User> GetProfessor(string professorName);
 }

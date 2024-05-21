@@ -34,7 +34,7 @@ public class SignalRService
 
     private async Task SendMessageToTelegramUser(Messages message)
     {
-        foreach (var recepientId in message.RecepientIds)
+        foreach (var recepientId in message.RecepientInTelegramIds)
         {
             await _telegramBotClient.SendTextMessageAsync(recepientId, message.Tittle);
         }

@@ -7,6 +7,7 @@ using Diploma.Common.Models.Enums;
 using Diploma.Common.Services;
 using Diploma.TgBot.Handlers;
 using Diploma.TgBot.Services;
+using Diploma.TgBot.UI;
 using Microsoft.EntityFrameworkCore;
 using Telegram.Bot;
 using Telegram.Bot.Types;
@@ -47,11 +48,20 @@ public class AccountController : BotController
                 await Client.SendTextMessageAsync(BotContext.Update.GetChatId(), "Отправьте свой контакт",
                     replyMarkup: ButtonsHelper.CreateButtonWithContactRequest("Поделиться контактом"));
             }
-            else
+            if (User.Role == Role.Graduate)
             {
-                _buttonsGenerationService.SetInlineButtons("Отправить сообщение");
-                await Client.SendTextMessageAsync(BotContext.Update.GetChatId(), "Отправьте сообщение",
-                    replyMarkup: _buttonsGenerationService.GetButtons());
+                await Client.SendTextMessageAsync(BotContext.Update.GetChatId(), "Выберите действие:",
+                    replyMarkup: Buttons.GraduateButtons());
+            } 
+            if (User.Role == Role.Student)
+            {
+                await Client.SendTextMessageAsync(BotContext.Update.GetChatId(), "Выберите действие:",
+                    replyMarkup: Buttons.StudentButtons());
+            } 
+            if (User.Role == Role.Applicant)
+            {
+                await Client.SendTextMessageAsync(BotContext.Update.GetChatId(), "Выберите действие:",
+                    replyMarkup: Buttons.ApplicantButtons());
             } 
         }
         catch (Exception ex)
@@ -111,7 +121,7 @@ public class AccountController : BotController
                     role, groupName);
                 await Client.SendTextMessageAsync(BotContext.Update.GetChatId(), $"Ваша заявка отправлена на обработку!" +
                     $"Пока что можете воспользоваться данным функционалом",
-                    replyMarkup: _buttonsGenerationService.GetButtons());
+                    replyMarkup: Buttons.StudentButtons());
             }
             if (role == Role.Applicant)
             {

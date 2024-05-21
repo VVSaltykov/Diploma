@@ -31,4 +31,11 @@ public class UserController : ControllerBase
         var users = (await UserRepository.Read(u => u.Role == Role.Admin || u.Role == Role.Professor)).ToList();
         return users;
     }
+    
+    [HttpPost("Professor")]
+    public async Task<User> GetProfessor(string professorName)
+    {
+        var user = await UserRepository.ReadFirst(u => u.Name == professorName && u.Role == Role.Professor);
+        return user;
+    }
 }

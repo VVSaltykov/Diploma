@@ -1,4 +1,5 @@
 ﻿using System.Security.Claims;
+using Diploma.Common.Models;
 using Microsoft.AspNetCore.Components.Authorization;
 
 namespace Diploma.Common.ServicesForWeb;
@@ -35,33 +36,23 @@ public class CookieAuthenticationStateProvider : AuthenticationStateProvider
     
     public override async Task<AuthenticationState> GetAuthenticationStateAsync()
     {
-        // if (await IsCookieExpired())
-        // {
-        //     return new AuthenticationState(new ClaimsPrincipal());
-        // }
-
         var token = await cookieService.GetCookies("token");
         
         if (!string.IsNullOrEmpty(token))
         {
             await _sessionsService.RefreshSession();
-            var claims = new[] { new Claim(ClaimTypes.Authentication, token) }; // Замените "username" на фактическую информацию о пользователе
+            var role = _sessionsService.SessionData.User.Role;
+            var claims = new[]
+            {
+                new Claim(ClaimTypes.Authentication, token),
+                new Claim(ClaimTypes.Role, role.ToString())
+            };
             var identity = new ClaimsIdentity(claims, "token");
             var user = new ClaimsPrincipal(identity);
             return new AuthenticationState(user);
         }
 
         return GetStateAnonymous();
-    }
-    
-    public async Task SetAuthenticationState(string userName)
-    {
-        var claims = new[] { new Claim(ClaimTypes.Name, userName) };
-        var identity = new ClaimsIdentity(claims, "token");
-        var user = new ClaimsPrincipal(identity);
-    
-        var authState = Task.FromResult(new AuthenticationState(user));
-        NotifyAuthenticationStateChanged(authState);
     }
     
     private async Task<DateTime?> GetCookieExpiration(string key)

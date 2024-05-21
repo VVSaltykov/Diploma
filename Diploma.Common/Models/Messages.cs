@@ -5,9 +5,11 @@ namespace Diploma.Common.Models;
 public class Messages : BaseEntity<int>
 {
     public string Tittle { get; set; }
+    public string Text { get; set; }
     public DateTime DateTime { get; set; }
     public bool IsAnonymous { get; set; }
-    public List<long?> RecepientIds { get; set; } = new List<long?>();
+    public List<long?> RecepientInTelegramIds { get; set; } = new List<long?>();
+    public List<Guid?> RecepientInWebIds { get; set; } = new List<Guid?>();
     
     public Guid UserId { get; set; }
     [ForeignKey("UserId")]

@@ -26,4 +26,10 @@ public class MessagesService : IMessagesService
         var messages = await _messagesService.GetAll(TelegramUsers);
         return messages;
     }
+
+    public async Task<List<Messages>> GetPrivateMessages(Guid userId)
+    {
+        var messages = await _messagesService.GetPrivateMessages(userId);
+        return messages;
+    }
 }

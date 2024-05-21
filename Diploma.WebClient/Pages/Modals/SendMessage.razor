@@ -77,7 +77,7 @@
                                     .Select(u => (long?)u.ChatId)
                                     .Distinct();
 
-        model.RecepientIds = selectedUserIds
+        model.RecepientInTelegramIds = selectedUserIds
                             .Union(selectedGroupUserIds)
                             .ToList();
         DialogService.Close(model);

@@ -24,4 +24,9 @@ public class UserService : IUserService
         var users = await _userService.GetWebUsers();
         return users;
     }
+
+    public async Task<User> GetProfessor(string professorName)
+    {
+        return await _userService.GetProfessor(professorName);
+    }
 }

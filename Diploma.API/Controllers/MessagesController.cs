@@ -29,10 +29,12 @@ public class MessagesController : ControllerBase
             Messages _messages = new Messages
             {
                 Tittle = messages.Tittle,
+                Text = messages.Text,
                 DateTime = DateTime.UtcNow,
                 IsAnonymous = messages.IsAnonymous,
                 UserId = messages.UserId,
-                RecepientIds = messages.RecepientIds
+                RecepientInTelegramIds = messages.RecepientInTelegramIds,
+                RecepientInWebIds = messages.RecepientInWebIds
             };
             await _messagesRepository.Create(_messages);
             
@@ -50,7 +52,7 @@ public class MessagesController : ControllerBase
             List<Messages> messages = new List<Messages>();
             foreach (var telegramUser in TelegramUsers)
             {
-                var message = (await _messagesRepository.Read(m => m.UserId == telegramUser.Id, m => m.User)).ToList();
+                var message = (await _messagesRepository.Read(m => m.UserId == telegramUser.Id && !m.RecepientInWebIds.Any(), m => m.User)).ToList();
                 messages.AddRange(message);
             }
             return messages;
@@ -61,7 +63,17 @@ public class MessagesController : ControllerBase
         }
     }
     
-    private async Task SendMessageToBot(Messages message)
+    [HttpPost("GetPrivateMessages")]
+    public async Task<List<Messages>> GetPrivateMessages(Guid userId)
     {
+        try
+        {
+            var messages = (await _messagesRepository.Read(m => m.RecepientInWebIds.Contains(userId), m => m.User)).ToList();
+            return messages;
+        }
+        catch (Exception ex)
+        {
+            return null;
+        }
     }
 }

@@ -1,13 +1,13 @@
 ﻿@using Microsoft.AspNetCore.Components.Authorization
 <RadzenPanelMenu>
-    @* COMMON menu item for ALL USERS *@
     <RadzenPanelMenuItem Text="Сообщения" Icon="event" IconColor="@Colors.Warning" Path="/"/>
+    <AuthorizeView Roles="Professor">
+        <RadzenPanelMenuItem Text="Личные сообщения" Icon="event" IconColor="@Colors.Warning" Path="/PrivateMessages"/>
+    </AuthorizeView>
     <RadzenPanelMenuItem Text="Пользователи Telegram" Icon="accessibility" IconColor="@Colors.Warning" Path="/TelegramUsers"/>
-    
     <AuthorizeView Roles="Admin">
         <RadzenPanelMenuItem Text="Пользователи Web" Icon="accessibility" IconColor="@Colors.Warning" Path="/WebUsers"/>
     </AuthorizeView>
-
 </RadzenPanelMenu>
 
 @code {
