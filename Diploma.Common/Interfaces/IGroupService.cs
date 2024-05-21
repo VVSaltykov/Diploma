@@ -11,4 +11,7 @@ public interface IGroupService
 
     [Post("/api/Group/{name}")]
     Task<Group> Read(string name);
+
+    [Post("/api/Group/GetAll")]
+    Task<List<Group>> GetAll();
 }

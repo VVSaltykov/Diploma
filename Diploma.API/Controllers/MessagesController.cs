@@ -32,7 +32,7 @@ public class MessagesController : ControllerBase
                 DateTime = DateTime.UtcNow,
                 IsAnonymous = messages.IsAnonymous,
                 UserId = messages.UserId,
-                RecepientId = messages.RecepientId
+                RecepientIds = messages.RecepientIds
             };
             await _messagesRepository.Create(_messages);
             

@@ -22,4 +22,10 @@ public class GroupService : IGroupService
     {
         return _groupService.Read(name);
     }
+
+    public async Task<List<Group>> GetAll()
+    {
+        var groups = await _groupService.GetAll();
+        return groups;
+    }
 }

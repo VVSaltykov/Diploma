@@ -27,6 +27,13 @@ public class GroupController : ControllerBase
         await _groupRepository.Create(group);
     }
     
+    [HttpPost("GetAll")]
+    public async Task<List<Group>> GetAll()
+    {
+        List<Group> groups = (await _groupRepository.Read(include: g => g.Users)).ToList();
+        return groups;
+    }
+    
     [HttpPost("{name}")]
     public async Task<Group> Read(string name)
     {

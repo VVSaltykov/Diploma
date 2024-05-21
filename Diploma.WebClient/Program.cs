@@ -46,6 +46,8 @@ public class Program
             // Можно настроить HttpClient здесь, если необходимо
             return new MessagesService(httpClient);
         });
+        builder.Services.AddSingleton<MessagesService>();
+        
         builder.Services.AddSingleton<IUserService, UserService>(sp =>
         {
             var httpClient = sp.GetRequiredService<HttpClient>();
@@ -53,8 +55,16 @@ public class Program
             // Можно настроить HttpClient здесь, если необходимо
             return new UserService(httpClient);
         });
-        builder.Services.AddSingleton<MessagesService>();
         builder.Services.AddSingleton<UserService>();
+        
+        builder.Services.AddSingleton<IGroupService, GroupService>(sp =>
+        {
+            var httpClient = sp.GetRequiredService<HttpClient>();
+            httpClient.BaseAddress = new Uri("https://localhost:7165");
+            // Можно настроить HttpClient здесь, если необходимо
+            return new GroupService(httpClient);
+        });
+        builder.Services.AddSingleton<GroupService>();
         builder.Services.AddScoped<CookieService>();
         builder.Services.AddScoped<AuthenticationStateProvider>(provider => provider.GetRequiredService<CookieAuthenticationStateProvider>());
         builder.Services.AddScoped<CookieAuthenticationStateProvider>();

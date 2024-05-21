@@ -1,9 +1,10 @@
 ﻿@using Diploma.Common.Interfaces
 @using Diploma.Common.Models
+@using Group = Diploma.Common.Models.Group
 @layout MainLayout
 @inject DialogService DialogService
 
-<RadzenTemplateForm TItem="Messages" Data="@Messages" Submit="@OnSubmit">
+<RadzenTemplateForm TItem="Messages" Data="@Messages" Submit="@SubmitForm">
     <div class="row" style="margin-bottom: 16px">
         <div class="col-md-3">
             <RadzenLabel Text="Текст"/>
@@ -17,7 +18,18 @@
             <RadzenLabel Text="Пользователь Telegram"/>
         </div>
         <div class="col">
-            <RadzenDropDown @bind-Value="@Messages.RecepientId" Data="@TelegramUsers" TextProperty="Name" ValueProperty="ChatId" Name="TelegramUser"/>
+            @foreach (var model in dropDownModels)
+            {
+            <div class="row" style="margin-bottom: 16px">
+                <div class="col">
+                    <RadzenDropDown @bind-Value="model.SelectedUserId" Data="@TelegramUsers" TextProperty="Name" ValueProperty="ChatId" Name="TelegramUser" Change="@(args => OnUserChanged(model, args))" />
+                </div>
+                <div class="col">
+                    <RadzenButton Text="Удалить" Click="@(() => RemoveUserDropdown(model))" />
+                </div>
+            </div>
+            }
+            <RadzenButton Text="Добавить пользователя" Click="@AddUserDropdown" />
         </div>
     </div>
     <div class="row justify-content-center">
@@ -32,6 +44,33 @@
 @code {
     [Parameter] public Messages Messages { get; set; }
     [Parameter] public List<User> TelegramUsers { get; set; }
+    [Parameter] public List<Group> Groups { get; set; }
+    
+    private List<DropDownModel> dropDownModels = new List<DropDownModel> { new DropDownModel() };
 
-private void OnSubmit(Messages model) => DialogService.Close(model);
+    private void SubmitForm(Messages model)
+    {
+        model.RecepientIds = dropDownModels.Select(m => (long?)m.SelectedUserId).Distinct().ToList();
+        DialogService.Close(model);
+    }
+    
+    private void AddUserDropdown()
+    {
+        dropDownModels.Add(new DropDownModel());
+    }
+
+    private void RemoveUserDropdown(DropDownModel model)
+    {
+        dropDownModels.Remove(model);
+    }
+
+    private void OnUserChanged(DropDownModel model, object value)
+    {
+        model.SelectedUserId = (long)value;
+    }
+
+    private class DropDownModel
+    {
+        public long SelectedUserId { get; set; }
+    }
 }

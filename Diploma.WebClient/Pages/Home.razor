@@ -6,8 +6,10 @@
 @using Diploma.WebClient.Pages.Modals
 @using Microsoft.AspNetCore.Authorization
 @using Microsoft.AspNetCore.Components.Authorization
+@using Group = Diploma.Common.Models.Group
 @inject DialogService DialogService
 @inject IUserService UserService
+@inject IGroupService GroupService
 @inject AuthenticationStateProvider AuthenticationStateProvider
 
 @layout MainLayout
@@ -45,14 +47,20 @@
     
     private List<Messages> MessagesList { get; set; }
     private List<User> UsersTelegram { get; set; } = new List<User>();
+    private List<Group> Groups { get; set; } = new List<Group>();
     
     bool allowVirtualization;
 
     protected override async Task OnInitializedAsync()
     {
-        UsersTelegram = await UserService.GetTelegramUsers();
-        MessagesList = await MessagesService.GetAll(UsersTelegram);
-        StateHasChanged();
+        try
+        {
+            Groups = await GroupService.GetAll();
+            UsersTelegram = await UserService.GetTelegramUsers();
+            MessagesList = await MessagesService.GetAll(UsersTelegram);
+            StateHasChanged();
+        }
+        catch (Exception ex) {}
     }
 
     private async Task OpenSendMessageDialog()
@@ -60,7 +68,8 @@
         var parameters = new Dictionary<string, object>
         {
             { "Messages", new Messages() },
-            { "TelegramUsers", UsersTelegram }
+            { "TelegramUsers", UsersTelegram },
+            { "Groups", Groups }
         };
         
         var result = await DialogService.OpenAsync<SendMessage>("Отправить сообщение", parameters);
