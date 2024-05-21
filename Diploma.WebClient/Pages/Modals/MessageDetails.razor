@@ -1,0 +1,33 @@
+﻿@using Diploma.Common.Models
+@layout MainLayout
+
+<RadzenTemplateForm TItem="Messages" Data="@Messages">
+    <div class="row" style="margin-bottom: 16px">
+        <div class="col-md-3">
+            <RadzenLabel Text="Заголовок"/>
+        </div>
+        <div class="col">
+            <RadzenTextBox @bind-Value="@Messages.Tittle" Name="Tittle" Disabled="true"/>
+        </div>
+    </div>
+    <div class="row" style="margin-bottom: 16px">
+        <div class="col-md-3">
+            <RadzenLabel Text="Получатель"/>
+        </div>
+        <div class="col">
+            <RadzenTextBox @bind-Value="@Messages.User.Name" Name="Recipient" Disabled="true"/>
+        </div>
+    </div>
+    <div class="row" style="margin-bottom: 16px">
+        <div class="col-md-3">
+            <RadzenLabel Text="Ответ"/>
+        </div>
+        <div class="col">
+            <RadzenTextArea @bind-Value="@Messages.Text" Name="Text" Rows="5" Style="width: 100%;" Disabled="true"/>
+        </div>
+    </div>
+</RadzenTemplateForm>
+
+@code {
+    [Parameter] public Messages Messages { get; set; }
+}

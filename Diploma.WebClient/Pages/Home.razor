@@ -28,7 +28,7 @@
                     </RadzenGridColumn>
                     <RadzenGridColumn TItem="Messages" Title="Действие">
                         <Template Context="message">
-                            <RadzenButton Text="Просмотреть" />
+                            <RadzenButton Text="Просмотреть" Click="@(() => CheckMessageDetails(message))"/>
                         </Template>
                     </RadzenGridColumn>
                     <RadzenGridColumn TItem="Messages" Title="Действие">
@@ -98,6 +98,16 @@
             newMessage.UserId = CurrentSession.User.Id;
             await MessagesService.Create(newMessage);
         }
+    }
+
+    private async Task CheckMessageDetails(Messages message)
+    {
+        var parameters = new Dictionary<string, object>
+        {
+            { "Messages", message }
+        };
+        
+        await DialogService.OpenAsync<MessageDetails>("Сообщение", parameters);
     }
     
     private async Task LogoutAsync()
