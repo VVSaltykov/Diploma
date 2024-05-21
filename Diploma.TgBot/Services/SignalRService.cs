@@ -36,7 +36,7 @@ public class SignalRService
     {
         foreach (var recepientId in message.RecepientInTelegramIds)
         {
-            await _telegramBotClient.SendTextMessageAsync(recepientId, message.Tittle);
+            await _telegramBotClient.SendTextMessageAsync(recepientId, $"{message.Tittle} + {message.Text}");
         }
     }
 }

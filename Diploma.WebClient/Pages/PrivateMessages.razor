@@ -31,6 +31,11 @@
                             <RadzenButton Text="Просмотреть" />
                         </Template>
                     </RadzenGridColumn>
+                    <RadzenGridColumn TItem="Messages" Title="Действие">
+                        <Template Context="message">
+                            <RadzenButton Text="Ответить" Click="@(() => CreateAnswer(message))"/>
+                        </Template>
+                    </RadzenGridColumn>
                 </Columns>
             </RadzenGrid>
         </div>
@@ -71,6 +76,22 @@
         };
         
         var result = await DialogService.OpenAsync<SendMessage>("Отправить сообщение", parameters);
+        if (result != null)
+        {
+            Messages newMessage = (Messages)result;
+            newMessage.UserId = CurrentSession.User.Id;
+            await MessagesService.Create(newMessage);
+        }
+    }
+    
+    private async Task CreateAnswer(Messages message)
+    {
+        var parameters = new Dictionary<string, object>
+        {
+            { "Messages", message }
+        };
+    
+        var result = await DialogService.OpenAsync<CreateAnswer>("Ответить на сообщение", parameters);
         if (result != null)
         {
             Messages newMessage = (Messages)result;

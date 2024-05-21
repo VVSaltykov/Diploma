@@ -1,0 +1,52 @@
+﻿@using Diploma.Common.Interfaces
+@using Diploma.Common.Models
+@using Group = Diploma.Common.Models.Group
+@layout MainLayout
+@inject DialogService DialogService
+
+<RadzenTemplateForm TItem="Messages" Data="@Messages" Submit="@SubmitForm">
+    <div class="row" style="margin-bottom: 16px">
+        <div class="col-md-3">
+            <RadzenLabel Text="Заголовок"/>
+        </div>
+        <div class="col">
+            <RadzenTextBox @bind-Value="@Messages.Tittle" Name="Tittle" Disabled="true"/>
+        </div>
+    </div>
+    <div class="row" style="margin-bottom: 16px">
+        <div class="col-md-3">
+            <RadzenLabel Text="Получатель"/>
+        </div>
+        <div class="col">
+            <RadzenTextBox @bind-Value="@Messages.User.Name" Name="Recipient" Disabled="true"/>
+        </div>
+    </div>
+    <div class="row" style="margin-bottom: 16px">
+        <div class="col-md-3">
+            <RadzenLabel Text="Ответ"/>
+        </div>
+        <div class="col">
+            <RadzenTextArea @bind-Value="@ResponseText" Name="Text" Rows="5" Style="width: 100%;" />
+        </div>
+    </div>
+    <div class="row justify-content-center">
+        <div class="col-md-3"></div>
+        <div class="col-md-6 text-center">
+            <RadzenButton ButtonType="ButtonType.Submit" Icon="check_circle" ButtonStyle="ButtonStyle.Success" Text="Отправить!"/>
+        </div>
+        <div class="col-md-3"></div>
+    </div>
+</RadzenTemplateForm>
+
+@code {
+    [Parameter] public Messages Messages { get; set; }
+    
+    private string ResponseText { get; set; }
+
+    private void SubmitForm(Messages model)
+    {
+        model.RecepientInTelegramIds.Add(model.User.ChatId);
+        model.Text = ResponseText; // Устанавливаем текст ответа
+        DialogService.Close(model);
+    }
+}
