@@ -11,6 +11,7 @@ using Diploma.TgBot.UI;
 using Microsoft.EntityFrameworkCore;
 using Telegram.Bot;
 using Telegram.Bot.Types;
+using Telegram.Bot.Types.ReplyMarkups;
 using TgBotLib.Core;
 using TgBotLib.Core.Base;
 using TgBotLib.Core.Models;
@@ -76,35 +77,48 @@ public class AccountController : BotController
     {
         phoneNumber = Update.Message?.Contact.PhoneNumber;
         await Client.SendTextMessageAsync(BotContext.Update.GetChatId(), $"Как вас зовут?",
-            replyMarkup: new Telegram.Bot.Types.ReplyMarkups.ReplyKeyboardRemove());
+            replyMarkup: new ReplyKeyboardRemove());
     }
     
     [ActionStep(nameof(AccountController), 1)]
     public async Task SecondStep()
     {
         name = Update.Message.Text;
-        _buttonsGenerationService.SetInlineButtons("Студентом", "Абитуриентом", "Выпускником");
+        var buttons = new List<KeyboardButton>
+        {
+            new ("Студентом"),
+            new ("Абитуриентом"),
+            new ("Выпускником")
+        };
+
+        var replyMarkup = new ReplyKeyboardMarkup(buttons.Select(b => new[] { b }))
+        {
+            ResizeKeyboard = true,
+            OneTimeKeyboard = true
+        };
         await Client.SendTextMessageAsync(BotContext.Update.GetChatId(), $"Кем Вы являтесь?",
-            replyMarkup: _buttonsGenerationService.GetButtons());
+            replyMarkup: replyMarkup);
     }
 
     [ActionStep(nameof(AccountController), 2)]
     public async Task ThirdStep()
     {
-        if (Update.CallbackQuery.Data == "Студентом")
+        if (Update.Message.Text == "Студентом")
         {
             role = Role.Student;
-            await Client.SendTextMessageAsync(BotContext.Update.GetChatId(), $"Какая у вас группа?");
+            await Client.SendTextMessageAsync(BotContext.Update.GetChatId(), $"Какая у вас группа?",
+                replyMarkup: new ReplyKeyboardRemove());
         }
-        else if (Update.CallbackQuery.Data == "Абитуриентом")
+        else if (Update.Message.Text == "Абитуриентом")
         {
             role = Role.Applicant;
             _usersActionsService.IncrementStep(BotContext.Update.GetChatId());
         }
-        else if (Update.CallbackQuery.Data == "Студентом")
+        else if (Update.Message.Text == "Студентом")
         {
             role = Role.Graduate;
-            await Client.SendTextMessageAsync(BotContext.Update.GetChatId(), $"В какой группе Вы учились?");
+            await Client.SendTextMessageAsync(BotContext.Update.GetChatId(), $"В какой группе Вы учились?",
+                replyMarkup: new ReplyKeyboardRemove());
         }
     }
 
@@ -119,8 +133,7 @@ public class AccountController : BotController
                 groupName = Update.Message.Text;
                 await RegistrationHandler.RegistrationUser(BotContext.Update.GetChatId(), phoneNumber, name,
                     role, groupName);
-                await Client.SendTextMessageAsync(BotContext.Update.GetChatId(), $"Ваша заявка отправлена на обработку!" +
-                    $"Пока что можете воспользоваться данным функционалом",
+                await Client.SendTextMessageAsync(BotContext.Update.GetChatId(), $"Вы теперь зарегистрированы!",
                     replyMarkup: Buttons.StudentButtons());
             }
             if (role == Role.Applicant)
@@ -128,7 +141,7 @@ public class AccountController : BotController
                 await RegistrationHandler.RegistrationUser(BotContext.Update.GetChatId(), phoneNumber, name,
                     role);
                 await Client.SendTextMessageAsync(BotContext.Update.GetChatId(), $"Вы теперь зарегистрированы!",
-                    replyMarkup: _buttonsGenerationService.GetButtons());
+                    replyMarkup: Buttons.ApplicantButtons());
             }
             if (role == Role.Graduate)
             {
@@ -136,7 +149,7 @@ public class AccountController : BotController
                 await RegistrationHandler.RegistrationUser(BotContext.Update.GetChatId(), phoneNumber, name,
                     role, groupName);
                 await Client.SendTextMessageAsync(BotContext.Update.GetChatId(), $"Вы теперь зарегистрированы!",
-                    replyMarkup: _buttonsGenerationService.GetButtons());
+                    replyMarkup: Buttons.GraduateButtons());
             }
         }
         catch (Exception ex) {}
