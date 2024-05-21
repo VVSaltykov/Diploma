@@ -1,6 +1,7 @@
 ﻿using Diploma.API.Repositories;
 using Diploma.API.Services;
 using Diploma.Common.Models;
+using Diploma.Common.Models.Enums;
 using Diploma.Common.Services;
 using Microsoft.AspNetCore.Mvc;
 
@@ -60,13 +61,28 @@ public class AccountController : ControllerBase
     [HttpPost]
     public async Task Registration([FromBody] RegistrationModel model)
     {
-        User user = new User
+        if (model.Role == Role.Applicant)
         {
-            ChatId = model.ChatId,
-            PhoneNumber = model.PhoneNumber,
-            Name = model.Name,
-            GroupId = model.GroupId
-        };
-        await UserRepository.Create(user);
+            User user = new User
+            {
+                ChatId = model.ChatId,
+                PhoneNumber = model.PhoneNumber,
+                Name = model.Name,
+                Role = model.Role
+            };
+            await UserRepository.Create(user);
+        }
+        else
+        {
+            User user = new User
+            {
+                ChatId = model.ChatId,
+                PhoneNumber = model.PhoneNumber,
+                Name = model.Name,
+                GroupId = model.GroupId,
+                Role = model.Role
+            };
+            await UserRepository.Create(user);
+        }
     }
 }

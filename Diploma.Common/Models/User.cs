@@ -1,6 +1,7 @@
 ﻿using System.ComponentModel.DataAnnotations.Schema;
 using System.Diagnostics.CodeAnalysis;
 using System.Text.Json.Serialization;
+using Diploma.Common.Models.Enums;
 using Diploma.Common.Utils;
 
 namespace Diploma.Common.Models;
@@ -12,8 +13,9 @@ public class User : BaseEntity<Guid>
     public string PhoneNumber { get; set; }
     public long? ChatId { get; set; }
     public string? Token { get; set; }
+    public Role Role { get; set; }
     
-    public int GroupId { get; set; }
+    public int? GroupId { get; set; }
     [ForeignKey("GroupId")]
-    public Group Group { get; set; }
+    public Group? Group { get; set; }
 }

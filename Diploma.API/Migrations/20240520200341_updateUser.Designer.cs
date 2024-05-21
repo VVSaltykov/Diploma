@@ -3,6 +3,7 @@ using System;
 using Diploma.API;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
@@ -11,9 +12,11 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace Diploma.API.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    partial class AppDbContextModelSnapshot : ModelSnapshot
+    [Migration("20240520200341_updateUser")]
+    partial class updateUser
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -79,7 +82,7 @@ namespace Diploma.API.Migrations
                     b.Property<long?>("ChatId")
                         .HasColumnType("bigint");
 
-                    b.Property<int?>("GroupId")
+                    b.Property<int>("GroupId")
                         .HasColumnType("integer");
 
                     b.Property<string>("Login")
@@ -124,7 +127,9 @@ namespace Diploma.API.Migrations
                 {
                     b.HasOne("Diploma.Common.Models.Group", "Group")
                         .WithMany("Users")
-                        .HasForeignKey("GroupId");
+                        .HasForeignKey("GroupId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
                     b.Navigation("Group");
                 });

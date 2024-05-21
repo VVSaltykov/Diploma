@@ -1,4 +1,6 @@
-﻿namespace Diploma.Common.Models;
+﻿using Diploma.Common.Models.Enums;
+
+namespace Diploma.Common.Models;
 
 public class RegistrationModel
 {
@@ -7,5 +9,6 @@ public class RegistrationModel
     public long ChatId { get; set; }
     public string PhoneNumber { get; set; }
     public string Name { get; set; }
-    public int GroupId { get; set; }
+    public int? GroupId { get; set; }
+    public Role Role { get; set; }
 }
