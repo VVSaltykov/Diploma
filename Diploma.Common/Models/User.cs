@@ -10,7 +10,7 @@ public class User : BaseEntity<Guid>
     public string? Login { get; set; } = null;
     public string? Password { get; set; } = null;
     public string Name { get; set; }
-    public string PhoneNumber { get; set; }
+    public string? PhoneNumber { get; set; }
     public long? ChatId { get; set; }
     public string? Token { get; set; }
     public Role Role { get; set; }

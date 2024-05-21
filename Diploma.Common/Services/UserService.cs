@@ -18,4 +18,10 @@ public class UserService : IUserService
         var users = await _userService.GetTelegramUsers();
         return users;
     }
+
+    public async Task<List<User>> GetWebUsers()
+    {
+        var users = await _userService.GetWebUsers();
+        return users;
+    }
 }

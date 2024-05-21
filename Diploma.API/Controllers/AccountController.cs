@@ -74,6 +74,17 @@ public class AccountController : ControllerBase
             };
             await UserRepository.Create(user);
         }
+        else if (model.Role == Role.Admin || model.Role == Role.Professor)
+        {
+            User user = new User
+            {
+                Login = model.Login,
+                Password = model.Password,
+                Name = model.Name,
+                Role = model.Role
+            };
+            await UserRepository.Create(user);
+        }
         else
         {
             var group = await GroupRepository.ReadFirst(g => g.Id == model.GroupId);

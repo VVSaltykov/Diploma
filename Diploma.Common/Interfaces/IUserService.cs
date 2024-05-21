@@ -7,4 +7,7 @@ public interface IUserService
 {
     [Post("/api/User/TelegramUsers")]
     Task<List<User>> GetTelegramUsers();
+    
+    [Post("/api/User/WebUsers")]
+    Task<List<User>> GetWebUsers();
 }

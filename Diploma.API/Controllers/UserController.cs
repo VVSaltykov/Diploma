@@ -24,4 +24,11 @@ public class UserController : ControllerBase
             include: u => u.Group)).ToList();
         return users;
     }
+    
+    [HttpPost("WebUsers")]
+    public async Task<List<User>> GetWebUsers()
+    {
+        var users = (await UserRepository.Read(u => u.Role == Role.Admin || u.Role == Role.Professor)).ToList();
+        return users;
+    }
 }
