@@ -3,7 +3,10 @@
     @* COMMON menu item for ALL USERS *@
     <RadzenPanelMenuItem Text="Сообщения" Icon="event" IconColor="@Colors.Warning" Path="/"/>
     <RadzenPanelMenuItem Text="Пользователи Telegram" Icon="accessibility" IconColor="@Colors.Warning" Path="/TelegramUsers"/>
-    <RadzenPanelMenuItem Text="Пользователи Web" Icon="accessibility" IconColor="@Colors.Warning" Path="/WebUsers"/>
+    
+    <AuthorizeView Roles="Admin">
+        <RadzenPanelMenuItem Text="Пользователи Web" Icon="accessibility" IconColor="@Colors.Warning" Path="/WebUsers"/>
+    </AuthorizeView>
 
 </RadzenPanelMenu>
 

@@ -11,7 +11,7 @@
 @layout MainLayout
 @attribute [Authorize]
 
-<AuthorizeView>
+<AuthorizeView Roles="Admin">
     <Authorized>
         <RadzenButton Text="Создать аккаунт" Click="@OpenRegistrationDialog"/>
         <div class="rz-m-1 rz-mb-0" style="width: 98%; height: 98%">
@@ -29,6 +29,9 @@
             </RadzenGrid>
         </div>
     </Authorized>
+    <NotAuthorized>
+        <p>У вас нет прав доступа к этому содержимому.</p>
+    </NotAuthorized>
 </AuthorizeView>
 
 @code {
