@@ -11,7 +11,8 @@
 <AuthorizeView>
     <Authorized>
         <div class="rz-m-1 rz-mb-0" style="width: 98%; height: 98%">
-            <RadzenGrid Data="@UsersTelegram" TItem="User" EmptyText="Нет пользователей">
+            <RadzenGrid Data="@UsersTelegram" TItem="User" EmptyText="Нет пользователей" AllowFiltering="false" AllowPaging="true" PageSize="7"
+                        AllowSorting="true">
                 <Columns>
                     <RadzenGridColumn TItem="User" Property="Name" Title="ФИО"/>
                     <RadzenGridColumn TItem="User" Property="PhoneNumber" Title="Номер телефона"/>

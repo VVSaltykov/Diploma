@@ -15,7 +15,8 @@
     <Authorized>
         <RadzenButton Text="Создать аккаунт" Click="@OpenRegistrationDialog"/>
         <div class="rz-m-1 rz-mb-0" style="width: 98%; height: 98%">
-            <RadzenGrid Data="@UsersWeb" TItem="User" EmptyText="Нет пользователей">
+            <RadzenGrid Data="@UsersWeb" TItem="User" EmptyText="Нет пользователей" AllowFiltering="false" AllowPaging="true" PageSize="7"
+                        AllowSorting="true">
                 <Columns>
                     <RadzenGridColumn TItem="User" Property="Name" Title="ФИО"/>
                     <RadzenGridColumn TItem="User" Property="Login" Title="Логин"/>

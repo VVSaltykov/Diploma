@@ -1,6 +1,8 @@
-﻿using Diploma.Common.Models;
+﻿using System.Collections.Concurrent;
+using Diploma.Common.Models;
 using Diploma.Common.Models.Enums;
 using Diploma.Common.Services;
+using Diploma.TgBot.Data;
 using Diploma.TgBot.Handlers;
 using Diploma.TgBot.Services;
 using Diploma.TgBot.UI;
@@ -18,38 +20,52 @@ public class MessageController : BotController
     private readonly IInlineButtonsGenerationService _buttonsGenerationService;
     private readonly IUsersActionsService _usersActionsService;
 
-    private static string tittle;
-    private static string text;
-    private static bool isAnonymous;
-    
+    private static ConcurrentDictionary<long, UserSentMessageState> userStates = new ConcurrentDictionary<long, UserSentMessageState>();
+
     public MessageController(IUsersActionsService usersActionsService, IInlineButtonsGenerationService buttonsGenerationService)
     {
         _usersActionsService = usersActionsService;
         _buttonsGenerationService = buttonsGenerationService;
     }
-    
+
     [Message("Отправить сообщение")]
     public async Task InitHandling()
     {
-        _usersActionsService.HandleUser(BotContext.Update.GetChatId(), nameof(MessageController));
-        await Client.SendTextMessageAsync(BotContext.Update.GetChatId(), "Напишите заголовок");
+        long chatId = BotContext.Update.GetChatId();
+        _usersActionsService.HandleUser(chatId, nameof(MessageController));
+        
+        userStates[chatId] = new UserSentMessageState(); // Инициализация состояния пользователя
+        
+        await Client.SendTextMessageAsync(chatId, "Напишите заголовок");
     }
     
     [ActionStep(nameof(MessageController), 0)]
     public async Task FirstStep()
     {
-        tittle = Update.Message.Text;
-        await Client.SendTextMessageAsync(BotContext.Update.GetChatId(), $"Напишите сообщение");
+        long chatId = BotContext.Update.GetChatId();
+        
+        if (userStates.TryGetValue(chatId, out var userState))
+        {
+            userState.Title = Update.Message.Text;
+        }
+        
+        await Client.SendTextMessageAsync(chatId, "Напишите сообщение");
     }
     
     [ActionStep(nameof(MessageController), 1)]
     public async Task SecondStep()
     {
-        text = Update.Message.Text;
+        long chatId = BotContext.Update.GetChatId();
+        
+        if (userStates.TryGetValue(chatId, out var userState))
+        {
+            userState.Text = Update.Message.Text;
+        }
+        
         var buttons = new List<KeyboardButton>
         {
-            new ("Да"),
-            new ("Нет")
+            new("Да"),
+            new("Нет")
         };
 
         var replyMarkup = new ReplyKeyboardMarkup(buttons.Select(b => new[] { b }))
@@ -57,45 +73,47 @@ public class MessageController : BotController
             ResizeKeyboard = true,
             OneTimeKeyboard = true
         };
-        await Client.SendTextMessageAsync(BotContext.Update.GetChatId(), $"Вы хотите отправить сообщение анонимно?",
-            replyMarkup: replyMarkup);
+        
+        await Client.SendTextMessageAsync(chatId, "Вы хотите отправить сообщение анонимно?", replyMarkup: replyMarkup);
     }
 
     [ActionStep(nameof(MessageController), 2)]
     public async Task ThirdStep()
     {
-        try
+        long chatId = BotContext.Update.GetChatId();
+        
+        if (userStates.TryGetValue(chatId, out var userState))
         {
-            _buttonsGenerationService.SetInlineButtons("Отправить сообщение");
             var answer = Update.Message.Text;
-            if (answer == "Да") isAnonymous = true;
-            if (answer == "Нет") isAnonymous = false;
+            userState.IsAnonymous = answer == "Да";
 
-            await MessageHandler.SendMessage(BotContext.Update.GetChatId(), tittle, text, isAnonymous);
-            
-            AccountService accountService = SingletonService.GetAccountService();
-            var User = await accountService.Read(BotContext.Update.GetChatId());
+            try
+            {
+                await MessageHandler.SendMessage(chatId, userState.Title, userState.Text, userState.IsAnonymous);
+                
+                AccountService accountService = SingletonService.GetAccountService();
+                var user = await accountService.Read(chatId);
 
-            if (User.Role == Role.Graduate)
-            {
-                await Client.SendTextMessageAsync(BotContext.Update.GetChatId(), $"Вы отправили сообщение",
-                    replyMarkup: Buttons.GraduateButtons());
+                var replyMarkup = user.Role switch
+                {
+                    Role.Graduate => Buttons.GraduateButtons(),
+                    Role.Applicant => Buttons.ApplicantButtons(),
+                    Role.Student => Buttons.StudentButtons(),
+                    _ => null
+                };
+
+                await Client.SendTextMessageAsync(chatId, "Вы отправили сообщение", replyMarkup: replyMarkup);
             }
-            if (User.Role == Role.Applicant)
+            catch (Exception ex)
             {
-                await Client.SendTextMessageAsync(BotContext.Update.GetChatId(), $"Вы отправили сообщение",
-                    replyMarkup: Buttons.ApplicantButtons());
+                // Обработка других исключений, если необходимо
+                Console.WriteLine($"Error: {ex.Message}");
             }
-            if (User.Role == Role.Student)
+            finally
             {
-                await Client.SendTextMessageAsync(BotContext.Update.GetChatId(), $"Вы отправили сообщение",
-                    replyMarkup: Buttons.StudentButtons());
+                // Очистка состояния пользователя после завершения
+                userStates.TryRemove(chatId, out _);
             }
-        }
-        catch (Exception ex)
-        {
-            // Обработка других исключений, если необходимо
-            Console.WriteLine($"Error: {ex.Message}");
         }
     }
 }
