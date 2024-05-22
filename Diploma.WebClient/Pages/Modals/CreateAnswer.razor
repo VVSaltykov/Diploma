@@ -18,7 +18,14 @@
             <RadzenLabel Text="Получатель"/>
         </div>
         <div class="col">
-            <RadzenTextBox @bind-Value="@Messages.User.Name" Name="Recipient" Disabled="true"/>
+            @if (!Messages.IsAnonymous)
+            {
+                <RadzenTextBox @bind-Value="@Messages.User.Name" Name="Recipient" Disabled="true" />
+            }
+            else
+            {
+                <RadzenTextBox Value="Аноним" Name="Recipient" Disabled="true" />
+            }
         </div>
     </div>
     <div class="row" style="margin-bottom: 16px">

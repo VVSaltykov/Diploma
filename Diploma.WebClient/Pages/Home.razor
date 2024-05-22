@@ -23,7 +23,14 @@
                     <RadzenGridColumn TItem="Messages" Property="DateTime" Title="Дата отправки"/>
                     <RadzenGridColumn TItem="Messages" Title="Отправитель">
                         <Template Context="message">
-                            @message.User.Name
+                            @if (!message.IsAnonymous)
+                            {
+                                @message.User.Name
+                            }
+                            else
+                            {
+                                @("Аноним")
+                            }
                         </Template>
                     </RadzenGridColumn>
                     <RadzenGridColumn TItem="Messages" Title="Действие">
