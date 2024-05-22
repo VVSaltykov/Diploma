@@ -53,6 +53,7 @@
         {
             RegistrationModel registrationModel = (RegistrationModel)result;
             await AccountService.Registration(registrationModel);
+            StateHasChanged();
         }
     }
 }
