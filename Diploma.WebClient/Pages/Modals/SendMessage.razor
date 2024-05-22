@@ -21,95 +21,96 @@
             <RadzenTextArea @bind-Value="@ResponseText" Name="Text" Rows="5" Style="width: 100%;" />
         </div>
     </div>
-    <div class="row" style="margin-bottom: 16px">
-        <div class="col-md-3">
-            <RadzenLabel Text="Пользователь Telegram"/>
-        </div>
-        <RadzenStack>
-            @if (TelegramUsers.Any())
-            {
-                <RadzenDataGrid @ref="UserGrid" AllowRowSelectOnRowClick="@_allowRowSelectOnRowClick" AllowFiltering="false" AllowPaging="true" PageSize="11"
-                                AllowSorting="true" Data="@TelegramUsers" TItem="User" ColumnWidth="120px"
-                                SelectionMode="DataGridSelectionMode.Multiple" @bind-Value="@_selectedSportsmens" class="m-4">
-                    <Columns>
-                        <RadzenDataGridColumn TItem="User" Width="60px" Sortable="false" Filterable="false">
-                            <HeaderTemplate>
-                                <RadzenCheckBox TabIndex="-1" TriState="false" TValue="bool?" InputAttributes="@(new Dictionary<string, object> { { "aria-label", "Select all items" } })"
-                                                Value="@(_selectedSportsmens == null || _selectedSportsmens?.Any() != true ? false : !TelegramUsers.All(i => _selectedSportsmens.Contains(i)) ? null : TelegramUsers.Any(i => _selectedSportsmens.Contains(i)))"
-                                                Change="@(args => _selectedSportsmens = args == true ? TelegramUsers.ToList() : null)"/>
-                            </HeaderTemplate>
-                            <Template Context="data">
-                                <RadzenCheckBox TabIndex="-1" TriState="false" Value="@(_selectedSportsmens != null && _selectedSportsmens.Contains(data))" InputAttributes="@(new Dictionary<string, object> { { "aria-label", "Select item" } })"
-                                                TValue="bool" Change="@(args => { if (!_allowRowSelectOnRowClick) { UserGrid.SelectRow(data); } })"/>
-                            </Template>
-                        </RadzenDataGridColumn>
-                        <RadzenDataGridColumn TItem="User" Property="Name" Title="ФИО"/>
-                        <RadzenDataGridColumn TItem="User" Property="PhoneNumber" Title="Номер телефона"/>
-                        <RadzenDataGridColumn TItem="User" Property="Role" Title="Роль">
-                            <Template Context="user">
-                                @user.Role
-                            </Template>
-                        </RadzenDataGridColumn>
-                        <RadzenDataGridColumn TItem="User" Title="Группа">
-                            <Template Context="user">
-                                @if (user.Group != null)
-                                {
+    <RadzenStack>
+            
+        <RadzenText class="ms-3">
+            Выберите пользователей Telegram-бота, которым хотите отправить сообщение
+        </RadzenText>
+
+        @if (TelegramUsers.Any())
+        {
+            <RadzenDataGrid @ref="UserGrid" AllowRowSelectOnRowClick="@_allowRowSelectOnRowClick" AllowFiltering="false" AllowPaging="true" PageSize="11"
+                            AllowSorting="true" Data="@TelegramUsers" TItem="User" ColumnWidth="120px"
+                            SelectionMode="DataGridSelectionMode.Multiple" @bind-Value="@_selectedSportsmens" class="m-4">
+                <Columns>
+                    <RadzenDataGridColumn TItem="User" Width="60px" Sortable="false" Filterable="false">
+                        <HeaderTemplate>
+                            <RadzenCheckBox TabIndex="-1" TriState="false" TValue="bool?" InputAttributes="@(new Dictionary<string, object> { { "aria-label", "Select all items" } })"
+                                            Value="@(_selectedSportsmens == null || _selectedSportsmens?.Any() != true ? false : !TelegramUsers.All(i => _selectedSportsmens.Contains(i)) ? null : TelegramUsers.Any(i => _selectedSportsmens.Contains(i)))"
+                                            Change="@(args => _selectedSportsmens = args == true ? TelegramUsers.ToList() : null)"/>
+                        </HeaderTemplate>
+                        <Template Context="data">
+                            <RadzenCheckBox TabIndex="-1" TriState="false" Value="@(_selectedSportsmens != null && _selectedSportsmens.Contains(data))" InputAttributes="@(new Dictionary<string, object> { { "aria-label", "Select item" } })"
+                                            TValue="bool" Change="@(args => { if (!_allowRowSelectOnRowClick) { UserGrid.SelectRow(data); } })"/>
+                        </Template>
+                    </RadzenDataGridColumn>
+                    <RadzenDataGridColumn TItem="User" Property="Name" Title="ФИО"/>
+                    <RadzenDataGridColumn TItem="User" Property="Role" Title="Роль">
+                        <Template Context="user">
+                            @user.Role
+                        </Template>
+                    </RadzenDataGridColumn>
+                    <RadzenDataGridColumn TItem="User" Title="Группа">
+                        <Template Context="user">
+                            @if (user.Group != null)
+                            {
                                 @user.Group.Name
-                                }
-                                else
-                                {
+                            }
+                            else
+                            {
                                 @("Абитуриент")
-                                }
-                            </Template>
-                        </RadzenDataGridColumn>
-                    </Columns>
-                </RadzenDataGrid>
-            }
-            else
-            {
-                <RadzenDataGrid @ref="UserGrid" AllowRowSelectOnRowClick="@_allowRowSelectOnRowClick" AllowFiltering="false" AllowPaging="true" PageSize="11"
-                                AllowSorting="true" Data="@TelegramUsers" TItem="User" ColumnWidth="120px"
-                                SelectionMode="DataGridSelectionMode.Multiple" @bind-Value="@_selectedSportsmens" class="m-4">
-                    <Columns>
-                        <RadzenDataGridColumn TItem="User" Width="60px" Sortable="false" Filterable="false">
-                            <HeaderTemplate>
-                                <RadzenCheckBox TabIndex="-1" TriState="false" TValue="bool?" InputAttributes="@(new Dictionary<string, object> { { "aria-label", "Select all items" } })"
-                                                Value="@(_selectedSportsmens == null || _selectedSportsmens?.Any() != true ? false : !TelegramUsers.All(i => _selectedSportsmens.Contains(i)) ? null : TelegramUsers.Any(i => _selectedSportsmens.Contains(i)))"
-                                                Change="@(args => _selectedSportsmens = args == true ? TelegramUsers.ToList() : null)"/>
-                            </HeaderTemplate>
-                            <Template Context="data">
-                                <RadzenCheckBox TabIndex="-1" TriState="false" Value="@(_selectedSportsmens != null && _selectedSportsmens.Contains(data))" InputAttributes="@(new Dictionary<string, object> { { "aria-label", "Select item" } })"
-                                                TValue="bool" Change="@(args => { if (!_allowRowSelectOnRowClick) { UserGrid.SelectRow(data); } })"/>
-                            </Template>
-                        </RadzenDataGridColumn>
-                        <RadzenDataGridColumn TItem="User" Property="Name" Title="ФИО"/>
-                        <RadzenDataGridColumn TItem="User" Property="Role" Title="Роль">
-                            <Template Context="user">
-                                @user.Role
-                            </Template>
-                        </RadzenDataGridColumn>
-                        <RadzenDataGridColumn TItem="User" Title="Группа">
-                            <Template Context="user">
-                                @if (user.Group != null)
-                                {
+                            }
+                        </Template>
+                    </RadzenDataGridColumn>
+                </Columns>
+            </RadzenDataGrid>
+        }
+        else
+        {
+            <RadzenDataGrid @ref="UserGrid" AllowRowSelectOnRowClick="@_allowRowSelectOnRowClick" AllowFiltering="false" AllowPaging="true" PageSize="11"
+                            AllowSorting="true" Data="@TelegramUsers" TItem="User" ColumnWidth="120px"
+                            SelectionMode="DataGridSelectionMode.Multiple" @bind-Value="@_selectedSportsmens" class="m-4">
+                <Columns>
+                    <RadzenDataGridColumn TItem="User" Width="60px" Sortable="false" Filterable="false">
+                        <HeaderTemplate>
+                            <RadzenCheckBox TabIndex="-1" TriState="false" TValue="bool?" InputAttributes="@(new Dictionary<string, object> { { "aria-label", "Select all items" } })"
+                                            Value="@(_selectedSportsmens == null || _selectedSportsmens?.Any() != true ? false : !TelegramUsers.All(i => _selectedSportsmens.Contains(i)) ? null : TelegramUsers.Any(i => _selectedSportsmens.Contains(i)))"
+                                            Change="@(args => _selectedSportsmens = args == true ? TelegramUsers.ToList() : null)"/>
+                        </HeaderTemplate>
+                        <Template Context="data">
+                            <RadzenCheckBox TabIndex="-1" TriState="false" Value="@(_selectedSportsmens != null && _selectedSportsmens.Contains(data))" InputAttributes="@(new Dictionary<string, object> { { "aria-label", "Select item" } })"
+                                            TValue="bool" Change="@(args => { if (!_allowRowSelectOnRowClick) { UserGrid.SelectRow(data); } })"/>
+                        </Template>
+                    </RadzenDataGridColumn>
+                    <RadzenDataGridColumn TItem="User" Property="Name" Title="ФИО"/>
+                    <RadzenDataGridColumn TItem="User" Property="Role" Title="Роль">
+                        <Template Context="user">
+                            @user.Role
+                        </Template>
+                    </RadzenDataGridColumn>
+                    <RadzenDataGridColumn TItem="User" Title="Группа">
+                        <Template Context="user">
+                            @if (user.Group != null)
+                            {
                                 @user.Group.Name
-                                }
-                                else
-                                {
+                            }
+                            else
+                            {
                                 @("Абитуриент")
-                                }
-                            </Template>
-                        </RadzenDataGridColumn>
-                    </Columns>
-                </RadzenDataGrid>
-            }
-        </RadzenStack>
-    </div>
-    <div class="row" style="margin-bottom: 16px">
-        <div class="col-md-3">
-            <RadzenLabel Text="Группа"/>
-        </div>
+                            }
+                        </Template>
+                    </RadzenDataGridColumn>
+                </Columns>
+            </RadzenDataGrid>
+        }
+    </RadzenStack>
+    
         <RadzenStack>
+            
+            <RadzenText class="ms-3">
+                Выберите группы, студентам которых хотите отправить сообщение
+            </RadzenText>
+            
             @if (Groups.Any())
             {
                 <RadzenDataGrid @ref="GroupGrid" AllowRowSelectOnRowClick="@_allowRowSelectOnRowClick" AllowFiltering="false" AllowPaging="true" PageSize="11"
@@ -130,7 +131,7 @@
                         <RadzenDataGridColumn TItem="Group" Property="Name" Title="Название"/>
                         <RadzenDataGridColumn TItem="Group" Title="Количество студентов">
                             <Template Context="group">
-                                @group.Users?.Count() ?? 0
+                                @group.Users?.Count()
                             </Template>
                         </RadzenDataGridColumn>
                     </Columns>
@@ -163,7 +164,6 @@
                 </RadzenDataGrid>
             }
         </RadzenStack>
-    </div>
     <div class="row justify-content-center">
         <div class="col-md-3"></div>
         <div class="col-md-6 text-center">
