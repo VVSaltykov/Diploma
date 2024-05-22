@@ -22,7 +22,14 @@
                     </RadzenGridColumn>
                     <RadzenGridColumn TItem="User" Title="Группа">
                         <Template Context="user">
-                            @user.Group.Name
+                            @if (user.Group != null)
+                            {
+                                @user.Group.Name
+                            }
+                            else
+                            {
+                                @("Абитуриент")
+                            }
                         </Template>
                     </RadzenGridColumn>
                 </Columns>

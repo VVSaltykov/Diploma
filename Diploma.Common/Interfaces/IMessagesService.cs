@@ -13,4 +13,10 @@ public interface IMessagesService
 
     [Post("/api/Messages/GetPrivateMessages")]
     Task<List<Messages>> GetPrivateMessages(Guid userId);
+
+    [Post("/api/Messages/GetMessagesForUser")]
+    Task<List<Messages>> GetMessagesForUser(long chatId);
+
+    [Post("/api/Messages/GetUserMessages")]
+    Task<List<Messages>> GetUserMessages(long chatId);
 }

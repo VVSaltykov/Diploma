@@ -32,4 +32,16 @@ public class MessagesService : IMessagesService
         var messages = await _messagesService.GetPrivateMessages(userId);
         return messages;
     }
+
+    public async Task<List<Messages>> GetMessagesForUser(long chatId)
+    {
+        var messages = await _messagesService.GetMessagesForUser(chatId);
+        return messages;
+    }
+
+    public async Task<List<Messages>> GetUserMessages(long chatId)
+    {
+        var messages = await _messagesService.GetUserMessages(chatId);
+        return messages;
+    }
 }

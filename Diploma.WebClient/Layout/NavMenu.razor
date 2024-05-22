@@ -1,12 +1,12 @@
 ﻿@using Microsoft.AspNetCore.Components.Authorization
-<RadzenPanelMenu>
-    <RadzenPanelMenuItem Text="Сообщения" Icon="event" IconColor="@Colors.Warning" Path="/"/>
+<RadzenPanelMenu Style="background-color: #06298E; color: white; flood-color: white;">
+    <RadzenPanelMenuItem Text="Сообщения" Icon="event" IconColor="@Colors.White" Style="background-color: #06298E" Path="/"/>
     <AuthorizeView Roles="Professor">
-        <RadzenPanelMenuItem Text="Личные сообщения" Icon="event" IconColor="@Colors.Warning" Path="/PrivateMessages"/>
+        <RadzenPanelMenuItem Text="Личные сообщения" Icon="event" IconColor="@Colors.White" Style="background-color: #06298E" Path="/PrivateMessages"/>
     </AuthorizeView>
-    <RadzenPanelMenuItem Text="Пользователи Telegram" Icon="accessibility" IconColor="@Colors.Warning" Path="/TelegramUsers"/>
+    <RadzenPanelMenuItem Text="Пользователи Telegram" Icon="accessibility" IconColor="@Colors.White" Style="background-color: #06298E" Path="/TelegramUsers"/>
     <AuthorizeView Roles="Admin">
-        <RadzenPanelMenuItem Text="Пользователи Web" Icon="accessibility" IconColor="@Colors.Warning" Path="/WebUsers"/>
+        <RadzenPanelMenuItem Text="Пользователи Web" Icon="accessibility" IconColor="@Colors.White" Style="background-color: #06298E" Path="/WebUsers"/>
     </AuthorizeView>
 </RadzenPanelMenu>
 

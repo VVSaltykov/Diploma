@@ -13,7 +13,12 @@ public class Buttons
             {
                 new KeyboardButton("Отправить сообщение"),
                 new KeyboardButton("Отправить сообщение преподавателю")
-            }
+            },
+            new[]
+            {
+                new KeyboardButton("Мои сообщения"),
+                new KeyboardButton("Полученные ответы")
+            },
         };
 
         // Создаем клавиатуру с кнопками
@@ -30,7 +35,12 @@ public class Buttons
             new[]
             {
                 new KeyboardButton("Отправить сообщение")
-            }
+            },
+            new[]
+            {
+                new KeyboardButton("Мои сообщения"),
+                new KeyboardButton("Полученные ответы")
+            },
         };
 
         // Создаем клавиатуру с кнопками
@@ -47,7 +57,34 @@ public class Buttons
             new[]
             {
                 new KeyboardButton("Отправить сообщение")
-            }
+            },
+            new[]
+            {
+                new KeyboardButton("Мои сообщения"),
+                new KeyboardButton("Полученные ответы")
+            },
+        };
+
+        // Создаем клавиатуру с кнопками
+        return new ReplyKeyboardMarkup(buttons)
+        {
+            ResizeKeyboard = true // Опционально: уменьшает размер кнопок для удобства
+        };
+    }
+    public static IReplyMarkup FlippingButtons()
+    {
+        // Создаем кнопки
+        var buttons = new[]
+        {
+            new[]
+            {
+                new KeyboardButton("Назад"),
+                new KeyboardButton("Вперед")
+            },
+            new[]
+            {
+                new KeyboardButton("Домой")
+            },
         };
 
         // Создаем клавиатуру с кнопками

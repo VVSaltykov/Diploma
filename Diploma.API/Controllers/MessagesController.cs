@@ -76,4 +76,31 @@ public class MessagesController : ControllerBase
             return null;
         }
     }
+    
+    [HttpPost("GetUserMessages")]
+    public async Task<List<Messages>> GetUserMessages(long chatId)
+    {
+        try
+        {
+            var messages = (await _messagesRepository.Read(m => m.User.ChatId == chatId, m => m.User)).ToList();
+            return messages;
+        }
+        catch (Exception ex)
+        {
+            return null;
+        }
+    }
+    [HttpPost("GetMessagesForUser")]
+    public async Task<List<Messages>> GetMessagesForUser(long chatId)
+    {
+        try
+        {
+            var messages = (await _messagesRepository.Read(m => m.User.ChatId == chatId && m.RecepientInTelegramIds.Contains(chatId), m => m.User)).ToList();
+            return messages;
+        }
+        catch (Exception ex)
+        {
+            return null;
+        }
+    }
 }
