@@ -12,6 +12,7 @@ public class Program
         builder.Services.AddBotLibCore(BotSettings.BotToken);
         
         builder.Services.AddSingleton<SignalRService>();
+        builder.Services.AddSingleton<BotCommandsSetupService>();
 
         var app = builder.Build();
         
