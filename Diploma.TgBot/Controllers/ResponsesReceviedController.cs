@@ -5,6 +5,7 @@ using Diploma.TgBot.Data;
 using Diploma.TgBot.Services;
 using Diploma.TgBot.UI;
 using Telegram.Bot;
+using Telegram.Bot.Types.Enums;
 using Telegram.Bot.Types.ReplyMarkups;
 using TgBotLib.Core;
 using TgBotLib.Core.Base;
@@ -28,6 +29,7 @@ public class ResponsesReceviedController : BotController
         MessagesService messagesService = SingletonService.GetMessagesService();
         
         var messages = await messagesService.GetMessagesForUser(Update.GetChatId());
+        messages = messages.OrderByDescending(msg => msg.DateTime).ToList();
 
         if (messages.Count > 0)
         {
@@ -54,8 +56,11 @@ public class ResponsesReceviedController : BotController
 
         if (userMessagesState != null && userMessagesState.Messages.Count > 0)
         {
-            userMessagesState.CurrentMessageIndex = (userMessagesState.CurrentMessageIndex - 1 + userMessagesState.Messages.Count) % userMessagesState.Messages.Count;
-            await ShowCurrentMessage(userMessagesState);
+            if (userMessagesState.CurrentMessageIndex < userMessagesState.Messages.Count - 1)
+            {
+                userMessagesState.CurrentMessageIndex++;
+                await ShowCurrentMessage(userMessagesState);
+            }
         }
     }
 
@@ -66,8 +71,11 @@ public class ResponsesReceviedController : BotController
 
         if (userMessagesState != null && userMessagesState.Messages.Count > 0)
         {
-            userMessagesState.CurrentMessageIndex = (userMessagesState.CurrentMessageIndex + 1) % userMessagesState.Messages.Count;
-            await ShowCurrentMessage(userMessagesState);
+            if (userMessagesState.CurrentMessageIndex > 0)
+            {
+                userMessagesState.CurrentMessageIndex--;
+                await ShowCurrentMessage(userMessagesState);
+            }
         }
     }
     
@@ -98,28 +106,45 @@ public class ResponsesReceviedController : BotController
     {
         var currentMessage = state.Messages[state.CurrentMessageIndex];
         
-        var inlineKeyboard = new InlineKeyboardMarkup(new[]
+        var senderInfo = currentMessage.User != null ? $"**Отправитель:** {currentMessage.User.Name} ({currentMessage.User.Id})" : "Unknown User";
+
+        var formattedMessage = $"**{currentMessage.Tittle}**\n\n" +
+                               $"{senderInfo}\n\n" +
+                               $"**Дата и время:** {currentMessage.DateTime}\n\n" +
+                               $"**Текст:**\n{currentMessage.Text}";
+        
+        var inlineKeyboardRows = new List<InlineKeyboardButton[]>
         {
             new []
             {
-                InlineKeyboardButton.WithCallbackData("Назад", "previousResponse"),
-                InlineKeyboardButton.WithCallbackData("Вперед", "nextResponse")
+                InlineKeyboardButton.WithCallbackData("Предыдущее", "previous")
             },
             new []
             {
-                InlineKeyboardButton.WithCallbackData("Домой", "tohomeResponse")
+                InlineKeyboardButton.WithCallbackData("Домой", "tohome")
             }
-        });
+        };
+        
+        if (state.CurrentMessageIndex < state.Messages.Count - 1 && state.CurrentMessageIndex != 0)
+        {
+            inlineKeyboardRows.Insert(0, new []
+            {
+                InlineKeyboardButton.WithCallbackData("Следующее", "next")
+            });
+        }
+
+        var inlineKeyboard = new InlineKeyboardMarkup(inlineKeyboardRows);
+        
         if (state.LastMessageId == 0)
         {
             var removeKeyboardMessage = await Client.SendTextMessageAsync(Update.GetChatId(), ".", replyMarkup: new ReplyKeyboardRemove());
             await Client.DeleteMessageAsync(Update.GetChatId(), removeKeyboardMessage.MessageId);
-            var sentMessage = await Client.SendTextMessageAsync(Update.GetChatId(), currentMessage.Text, replyMarkup: inlineKeyboard);
+            var sentMessage = await Client.SendTextMessageAsync(Update.GetChatId(), formattedMessage, replyMarkup: inlineKeyboard, parseMode: ParseMode.Markdown);
             state.LastMessageId = sentMessage.MessageId;
         }
         else
         {
-            await Client.EditMessageTextAsync(Update.GetChatId(), state.LastMessageId, currentMessage.Text, replyMarkup: inlineKeyboard);
+            await Client.EditMessageTextAsync(Update.GetChatId(), state.LastMessageId, formattedMessage, replyMarkup: inlineKeyboard, parseMode: ParseMode.Markdown);
         }
     }
 }

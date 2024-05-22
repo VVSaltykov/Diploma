@@ -13,4 +13,7 @@ public interface IUserService
 
     [Post("/api/User/Professor")]
     Task<User> GetProfessor(string professorName);
+
+    [Post("/api/User/GetUserById")]
+    Task<User> GetUserById(Guid userId);
 }

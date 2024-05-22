@@ -29,4 +29,9 @@ public class UserService : IUserService
     {
         return await _userService.GetProfessor(professorName);
     }
+
+    public async Task<User> GetUserById(Guid userId)
+    {
+        return await _userService.GetUserById(userId);
+    }
 }

@@ -95,7 +95,7 @@ public class MessagesController : ControllerBase
     {
         try
         {
-            var messages = (await _messagesRepository.Read(m => m.User.ChatId == chatId && m.RecepientInTelegramIds.Contains(chatId), m => m.User)).ToList();
+            var messages = (await _messagesRepository.Read(m => m.RecepientInTelegramIds.Contains(chatId), m => m.User)).ToList();
             return messages;
         }
         catch (Exception ex)
