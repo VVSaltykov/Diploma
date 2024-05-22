@@ -7,7 +7,7 @@
 <RadzenTemplateForm TItem="Messages" Data="@Messages" Submit="@SubmitForm">
     <div class="row" style="margin-bottom: 16px">
         <div class="col-md-3">
-            <RadzenLabel Text="Текст"/>
+            <RadzenLabel Text="Заголовок"/>
         </div>
         <div class="col">
             <RadzenTextBox @bind-Value="@Messages.Tittle" Name="Tittle"/>
@@ -15,41 +15,154 @@
     </div>
     <div class="row" style="margin-bottom: 16px">
         <div class="col-md-3">
-            <RadzenLabel Text="Пользователь Telegram"/>
+            <RadzenLabel Text="Текст"/>
         </div>
         <div class="col">
-            @foreach (var model in userDropDownModels)
-            {
-                <div class="row" style="margin-bottom: 16px">
-                    <div class="col">
-                        <RadzenDropDown @bind-Value="model.SelectedUserId" Data="@TelegramUsers" TextProperty="Name" ValueProperty="ChatId" Name="TelegramUser" Change="@(args => OnUserChanged(model, args))" />
-                    </div>
-                    <div class="col">
-                        <RadzenButton Text="Удалить" Icon="delete" ButtonStyle="ButtonStyle.Danger" Size="ButtonSize.Small" class="rz-border-radius-10 rz-shadow-10" Click="@(() => RemoveUserDropdown(model))" />
-                    </div>
-                </div>
-            }
-            <RadzenButton Text="Добавить ещё..." Icon="add" ButtonStyle="ButtonStyle.Primary" Size="ButtonSize.Small" class="rz-border-radius-10 rz-shadow-10" Click="@AddUserDropdown" />
+            <RadzenTextArea @bind-Value="@ResponseText" Name="Text" Rows="5" Style="width: 100%;" />
         </div>
+    </div>
+    <div class="row" style="margin-bottom: 16px">
+        <div class="col-md-3">
+            <RadzenLabel Text="Пользователь Telegram"/>
+        </div>
+        <RadzenStack>
+            @if (TelegramUsers.Any())
+            {
+                <RadzenDataGrid @ref="UserGrid" AllowRowSelectOnRowClick="@_allowRowSelectOnRowClick" AllowFiltering="false" AllowPaging="true" PageSize="11"
+                                AllowSorting="true" Data="@TelegramUsers" TItem="User" ColumnWidth="120px"
+                                SelectionMode="DataGridSelectionMode.Multiple" @bind-Value="@_selectedSportsmens" class="m-4">
+                    <Columns>
+                        <RadzenDataGridColumn TItem="User" Width="60px" Sortable="false" Filterable="false">
+                            <HeaderTemplate>
+                                <RadzenCheckBox TabIndex="-1" TriState="false" TValue="bool?" InputAttributes="@(new Dictionary<string, object> { { "aria-label", "Select all items" } })"
+                                                Value="@(_selectedSportsmens == null || _selectedSportsmens?.Any() != true ? false : !TelegramUsers.All(i => _selectedSportsmens.Contains(i)) ? null : TelegramUsers.Any(i => _selectedSportsmens.Contains(i)))"
+                                                Change="@(args => _selectedSportsmens = args == true ? TelegramUsers.ToList() : null)"/>
+                            </HeaderTemplate>
+                            <Template Context="data">
+                                <RadzenCheckBox TabIndex="-1" TriState="false" Value="@(_selectedSportsmens != null && _selectedSportsmens.Contains(data))" InputAttributes="@(new Dictionary<string, object> { { "aria-label", "Select item" } })"
+                                                TValue="bool" Change="@(args => { if (!_allowRowSelectOnRowClick) { UserGrid.SelectRow(data); } })"/>
+                            </Template>
+                        </RadzenDataGridColumn>
+                        <RadzenDataGridColumn TItem="User" Property="Name" Title="ФИО"/>
+                        <RadzenDataGridColumn TItem="User" Property="PhoneNumber" Title="Номер телефона"/>
+                        <RadzenDataGridColumn TItem="User" Property="Role" Title="Роль">
+                            <Template Context="user">
+                                @user.Role
+                            </Template>
+                        </RadzenDataGridColumn>
+                        <RadzenDataGridColumn TItem="User" Title="Группа">
+                            <Template Context="user">
+                                @if (user.Group != null)
+                                {
+                                @user.Group.Name
+                                }
+                                else
+                                {
+                                @("Абитуриент")
+                                }
+                            </Template>
+                        </RadzenDataGridColumn>
+                    </Columns>
+                </RadzenDataGrid>
+            }
+            else
+            {
+                <RadzenDataGrid @ref="UserGrid" AllowRowSelectOnRowClick="@_allowRowSelectOnRowClick" AllowFiltering="false" AllowPaging="true" PageSize="11"
+                                AllowSorting="true" Data="@TelegramUsers" TItem="User" ColumnWidth="120px"
+                                SelectionMode="DataGridSelectionMode.Multiple" @bind-Value="@_selectedSportsmens" class="m-4">
+                    <Columns>
+                        <RadzenDataGridColumn TItem="User" Width="60px" Sortable="false" Filterable="false">
+                            <HeaderTemplate>
+                                <RadzenCheckBox TabIndex="-1" TriState="false" TValue="bool?" InputAttributes="@(new Dictionary<string, object> { { "aria-label", "Select all items" } })"
+                                                Value="@(_selectedSportsmens == null || _selectedSportsmens?.Any() != true ? false : !TelegramUsers.All(i => _selectedSportsmens.Contains(i)) ? null : TelegramUsers.Any(i => _selectedSportsmens.Contains(i)))"
+                                                Change="@(args => _selectedSportsmens = args == true ? TelegramUsers.ToList() : null)"/>
+                            </HeaderTemplate>
+                            <Template Context="data">
+                                <RadzenCheckBox TabIndex="-1" TriState="false" Value="@(_selectedSportsmens != null && _selectedSportsmens.Contains(data))" InputAttributes="@(new Dictionary<string, object> { { "aria-label", "Select item" } })"
+                                                TValue="bool" Change="@(args => { if (!_allowRowSelectOnRowClick) { UserGrid.SelectRow(data); } })"/>
+                            </Template>
+                        </RadzenDataGridColumn>
+                        <RadzenDataGridColumn TItem="User" Property="Name" Title="ФИО"/>
+                        <RadzenDataGridColumn TItem="User" Property="Role" Title="Роль">
+                            <Template Context="user">
+                                @user.Role
+                            </Template>
+                        </RadzenDataGridColumn>
+                        <RadzenDataGridColumn TItem="User" Title="Группа">
+                            <Template Context="user">
+                                @if (user.Group != null)
+                                {
+                                @user.Group.Name
+                                }
+                                else
+                                {
+                                @("Абитуриент")
+                                }
+                            </Template>
+                        </RadzenDataGridColumn>
+                    </Columns>
+                </RadzenDataGrid>
+            }
+        </RadzenStack>
     </div>
     <div class="row" style="margin-bottom: 16px">
         <div class="col-md-3">
             <RadzenLabel Text="Группа"/>
         </div>
-        <div class="col">
-            @foreach (var model in groupDropDownModels)
+        <RadzenStack>
+            @if (Groups.Any())
             {
-                <div class="row" style="margin-bottom: 16px">
-                    <div class="col">
-                        <RadzenDropDown @bind-Value="model.SelectedGroupId" Data="@Groups" TextProperty="Name" ValueProperty="Id" Name="Group" Change="@(args => OnGroupChanged(model, args))" />
-                    </div>
-                    <div class="col">
-                        <RadzenButton Text="Удалить" Icon="delete" ButtonStyle="ButtonStyle.Danger" Size="ButtonSize.Small" class="rz-border-radius-10 rz-shadow-10" Click="@(() => RemoveGroupDropdown(model))" />
-                    </div>
-                </div>
+                <RadzenDataGrid @ref="GroupGrid" AllowRowSelectOnRowClick="@_allowRowSelectOnRowClick" AllowFiltering="false" AllowPaging="true" PageSize="11"
+                                AllowSorting="true" Data="@Groups" TItem="Group" ColumnWidth="120px"
+                                SelectionMode="DataGridSelectionMode.Multiple" @bind-Value="@_selectedGroups" class="m-4">
+                    <Columns>
+                        <RadzenDataGridColumn TItem="Group" Width="60px" Sortable="false" Filterable="false">
+                            <HeaderTemplate>
+                                <RadzenCheckBox TabIndex="-1" TriState="false" TValue="bool?" InputAttributes="@(new Dictionary<string, object> { { "aria-label", "Select all items" } })"
+                                                Value="@(_selectedGroups == null || _selectedGroups?.Any() != true ? false : !Groups.All(i => _selectedGroups.Contains(i)) ? null : Groups.Any(i => _selectedGroups.Contains(i)))"
+                                                Change="@(args => _selectedGroups = args == true ? Groups.ToList() : null)"/>
+                            </HeaderTemplate>
+                            <Template Context="data">
+                                <RadzenCheckBox TabIndex="-1" TriState="false" Value="@(_selectedGroups != null && _selectedGroups.Contains(data))" InputAttributes="@(new Dictionary<string, object> { { "aria-label", "Select item" } })"
+                                                TValue="bool" Change="@(args => { if (!_allowRowSelectOnRowClick) { GroupGrid.SelectRow(data); } })"/>
+                            </Template>
+                        </RadzenDataGridColumn>
+                        <RadzenDataGridColumn TItem="Group" Property="Name" Title="Название"/>
+                        <RadzenDataGridColumn TItem="Group" Title="Количество студентов">
+                            <Template Context="group">
+                                @group.Users?.Count() ?? 0
+                            </Template>
+                        </RadzenDataGridColumn>
+                    </Columns>
+                </RadzenDataGrid>
             }
-            <RadzenButton Text="Добавить ещё..." Icon="add" ButtonStyle="ButtonStyle.Primary" Size="ButtonSize.Small" class="rz-border-radius-10 rz-shadow-10" Click="@AddGroupDropdown" />
-        </div>
+            else
+            {
+                <RadzenDataGrid @ref="GroupGrid" AllowRowSelectOnRowClick="@_allowRowSelectOnRowClick" AllowFiltering="false" AllowPaging="true" PageSize="11"
+                                AllowSorting="true" Data="@Groups" TItem="Group" ColumnWidth="120px"
+                                SelectionMode="DataGridSelectionMode.Multiple" @bind-Value="@_selectedGroups" class="m-4">
+                    <Columns>
+                        <RadzenDataGridColumn TItem="Group" Width="60px" Sortable="false" Filterable="false">
+                            <HeaderTemplate>
+                                <RadzenCheckBox TabIndex="-1" TriState="false" TValue="bool?" InputAttributes="@(new Dictionary<string, object> { { "aria-label", "Select all items" } })"
+                                                Value="@(_selectedGroups == null || _selectedGroups?.Any() != true ? false : !Groups.All(i => _selectedGroups.Contains(i)) ? null : Groups.Any(i => _selectedGroups.Contains(i)))"
+                                                Change="@(args => _selectedGroups = args == true ? Groups.ToList() : null)"/>
+                            </HeaderTemplate>
+                            <Template Context="data">
+                                <RadzenCheckBox TabIndex="-1" TriState="false" Value="@(_selectedGroups != null && _selectedGroups.Contains(data))" InputAttributes="@(new Dictionary<string, object> { { "aria-label", "Select item" } })"
+                                                TValue="bool" Change="@(args => { if (!_allowRowSelectOnRowClick) { GroupGrid.SelectRow(data); } })"/>
+                            </Template>
+                        </RadzenDataGridColumn>
+                        <RadzenDataGridColumn TItem="Group" Property="Name" Title="Название"/>
+                        <RadzenDataGridColumn TItem="Group" Title="Количество студентов">
+                            <Template Context="group">
+                                @group.Users?.Count() ?? 0
+                            </Template>
+                        </RadzenDataGridColumn>
+                    </Columns>
+                </RadzenDataGrid>
+            }
+        </RadzenStack>
     </div>
     <div class="row justify-content-center">
         <div class="col-md-3"></div>
@@ -62,64 +175,39 @@
 
 @code {
     [Parameter] public Messages Messages { get; set; }
-    [Parameter] public List<User> TelegramUsers { get; set; }
-    [Parameter] public List<Group> Groups { get; set; }
+    [Parameter] public IEnumerable<User> TelegramUsers { get; set; } = new List<User>();
+    [Parameter] public IEnumerable<Group> Groups { get; set; } = new List<Group>();
     
-    private List<DropDownModel> userDropDownModels = new List<DropDownModel> { new DropDownModel() };
-    private List<GroupDropDownModel> groupDropDownModels = new List<GroupDropDownModel> { new GroupDropDownModel() };
+    private readonly bool _allowRowSelectOnRowClick = true;
+    private IList<User> _selectedSportsmens;
+    private IList<Group> _selectedGroups;
+    private RadzenDataGrid<User> UserGrid;
+    private RadzenDataGrid<Group> GroupGrid;
+    
+    private string ResponseText { get; set; }
 
     private void SubmitForm(Messages model)
     {
-        var selectedUserIds = userDropDownModels.Select(m => (long?)m.SelectedUserId).Distinct();
-        var selectedGroupUserIds = groupDropDownModels
-                                    .SelectMany(m => Groups.FirstOrDefault(g => g.Id == m.SelectedGroupId)?.Users)
-                                    .Where(u => u != null)
-                                    .Select(u => (long?)u.ChatId)
-                                    .Distinct();
+        var recipientIds = new List<long?>();
 
-        model.RecepientInTelegramIds = selectedUserIds
-                            .Union(selectedGroupUserIds)
-                            .ToList();
+        if (_selectedSportsmens != null)
+        {
+            recipientIds.AddRange(_selectedSportsmens.Where(user => user.ChatId.HasValue).Select(user => user.ChatId));
+        }
+
+        if (_selectedGroups != null)
+        {
+            foreach (var group in _selectedGroups)
+            {
+                if (group.Users != null)
+                {
+                    recipientIds.AddRange(group.Users.Where(user => user.ChatId.HasValue).Select(user => user.ChatId));
+                }
+            }
+        }
+
+        model.RecepientInTelegramIds = recipientIds.Distinct().ToList();
+        model.Text = ResponseText;
         DialogService.Close(model);
-    }
-    
-    private void AddUserDropdown()
-    {
-        userDropDownModels.Add(new DropDownModel());
-    }
-
-    private void RemoveUserDropdown(DropDownModel model)
-    {
-        userDropDownModels.Remove(model);
-    }
-
-    private void OnUserChanged(DropDownModel model, object value)
-    {
-        model.SelectedUserId = (long)value;
-    }
-
-    private void AddGroupDropdown()
-    {
-        groupDropDownModels.Add(new GroupDropDownModel());
-    }
-
-    private void RemoveGroupDropdown(GroupDropDownModel model)
-    {
-        groupDropDownModels.Remove(model);
-    }
-
-    private void OnGroupChanged(GroupDropDownModel model, object value)
-    {
-        model.SelectedGroupId = (int)value;
-    }
-
-    private class DropDownModel
-    {
-        public long SelectedUserId { get; set; }
-    }
-
-    private class GroupDropDownModel
-    {
-        public int SelectedGroupId { get; set; }
     }
 }
