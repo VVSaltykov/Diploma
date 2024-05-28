@@ -19,6 +19,11 @@ public class Buttons
                 new KeyboardButton("Мои сообщения"),
                 new KeyboardButton("Полученные ответы")
             },
+            new[]
+            {
+                new KeyboardButton("Мои достижения"),
+                new KeyboardButton("Достижения учеников")
+            },
         };
 
         // Создаем клавиатуру с кнопками
@@ -41,6 +46,11 @@ public class Buttons
                 new KeyboardButton("Мои сообщения"),
                 new KeyboardButton("Полученные ответы")
             },
+            new[]
+            {
+                new KeyboardButton("Мои достижения"),
+                new KeyboardButton("Достижения учеников")
+            },
         };
 
         // Создаем клавиатуру с кнопками
@@ -62,6 +72,10 @@ public class Buttons
             {
                 new KeyboardButton("Мои сообщения"),
                 new KeyboardButton("Полученные ответы")
+            },
+            new[]
+            {
+                new KeyboardButton("Достижения учеников")
             },
         };
 

@@ -28,8 +28,8 @@ public class Program
         
         builder.Services.AddAuthorizationCore(config =>
         {
-            config.AddPolicy("AdminOnly", policy => policy.RequireRole("Admin"));
-            config.AddPolicy("ProfessorOnly", policy => policy.RequireRole("Professor"));
+            config.AddPolicy("IsAdmin", policy => policy.RequireRole("Admin"));
+            config.AddPolicy("IsProfessor", policy => policy.RequireRole("Professor"));
         });
         
         builder.Services.AddRadzenComponents();
@@ -59,6 +59,14 @@ public class Program
         });
         builder.Services.AddSingleton<UserService>();
         
+        builder.Services.AddSingleton<IAchievementsService, AchievementsService>(sp =>
+        {
+            var httpClient = new HttpClient { BaseAddress = new Uri("https://localhost:7165") };
+            // Можно настроить HttpClient здесь, если необходимо
+            return new AchievementsService(httpClient);
+        });
+        builder.Services.AddSingleton<AchievementsService>();
+        
         builder.Services.AddSingleton<IGroupService, GroupService>(sp =>
         {
             var httpClient = sp.GetRequiredService<HttpClient>();
@@ -67,8 +75,9 @@ public class Program
             return new GroupService(httpClient);
         });
         builder.Services.AddSingleton<GroupService>();
-        builder.Services.AddScoped<CookieService>();
+        
         builder.Services.AddScoped<AuthenticationStateProvider>(provider => provider.GetRequiredService<CookieAuthenticationStateProvider>());
+        builder.Services.AddScoped<CookieService>();
         builder.Services.AddScoped<CookieAuthenticationStateProvider>();
         await builder.Build().RunAsync();
     }

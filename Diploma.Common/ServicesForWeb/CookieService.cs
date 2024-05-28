@@ -18,7 +18,7 @@ public class CookieService
 
     public async Task SetCookies(string key, string value)
     {
-        var expirationTime = DateTime.UtcNow.AddHours(1);
+        var expirationTime = DateTime.UtcNow;
         await jsRuntime.InvokeAsync<object>("WriteCookie.WriteCookie", key, value, expirationTime);
         await jsRuntime.InvokeAsync<object>("WriteCookie.WriteCookie", key + "_Expires", expirationTime.ToString(), expirationTime);
     }

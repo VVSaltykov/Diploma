@@ -34,9 +34,9 @@ public class AccountController : ControllerBase
     [HttpPost("Login")]
     public async Task<Session> Login(LoginModel loginModel)
     {
-        var userPassword = await _saltService.GetHashData(loginModel.Password, login: loginModel.Login);
+        //var userPassword = await _saltService.GetHashData(loginModel.Password, login: loginModel.Login);
         var user = await UserRepository.ReadFirst(u =>
-            u.Login == loginModel.Login && u.Password == userPassword);
+            u.Login == loginModel.Login && u.Password == loginModel.Password);
         if (user != null)
         {
             user.Token = Guid.NewGuid().ToString();

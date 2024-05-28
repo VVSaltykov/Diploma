@@ -3,11 +3,11 @@
 
 <RadzenPanelMenu DisplayStyle="@(sidebarExpanded ? MenuItemDisplayStyle.IconAndText : MenuItemDisplayStyle.Icon)" ShowArrow="false">
     <RadzenPanelMenuItem Text="Сообщения" Icon="event" IconColor="@Colors.Secondary" Path="/"/>
-    <AuthorizeView Roles="Professor">
+    <AuthorizeView Policy="IsProfessor">
         <RadzenPanelMenuItem Text="Личные сообщения" Icon="event" IconColor="@Colors.Secondary" Path="/PrivateMessages"/>
     </AuthorizeView>
     <RadzenPanelMenuItem Text="Пользователи Telegram" Icon="accessibility" IconColor="@Colors.Secondary" Path="/TelegramUsers"/>
-    <AuthorizeView Roles="Admin">
+    <AuthorizeView Policy="IsAdmin">
         <RadzenPanelMenuItem Text="Пользователи Web" Icon="accessibility" IconColor="@Colors.Secondary" Path="/WebUsers"/>
     </AuthorizeView>
 </RadzenPanelMenu>

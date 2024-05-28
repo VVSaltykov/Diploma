@@ -28,7 +28,11 @@ public class Program
                 options.Cookie.Domain = "localhost:7099";
                 options.Cookie.Path = "/"; // Устанавливаем путь cookie
             });
-        builder.Services.AddAuthorization();
+        builder.Services.AddAuthorization(config =>
+        {
+            config.AddPolicy("IsAdmin", policy => policy.RequireRole("Admin"));
+            config.AddPolicy("IsProfessor", policy => policy.RequireRole("Professor"));
+        });
         
         builder.Services.AddCors(options =>
         {
@@ -54,6 +58,7 @@ public class Program
         builder.Services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
         builder.Services.AddTransient<UserRepository>();
         builder.Services.AddTransient<GroupRepository>();
+        builder.Services.AddTransient<AchievementsRepository>();
         builder.Services.AddTransient<MessagesRepository>();
         builder.Services.AddTransient<SaltRepository>();
         builder.Services.AddSingleton<SessionService>();
