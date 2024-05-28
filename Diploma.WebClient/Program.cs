@@ -4,6 +4,7 @@ using Diploma.Common.ServicesForWeb;
 using Microsoft.AspNetCore.Components.Authorization;
 using Microsoft.AspNetCore.Components.Web;
 using Microsoft.AspNetCore.Components.WebAssembly.Hosting;
+using Radzen;
 
 namespace Diploma.WebClient;
 
@@ -31,10 +32,7 @@ public class Program
             config.AddPolicy("ProfessorOnly", policy => policy.RequireRole("Professor"));
         });
         
-        builder.Services.AddScoped<Radzen.DialogService>();
-        builder.Services.AddScoped<Radzen.NotificationService>();
-        builder.Services.AddScoped<Radzen.ContextMenuService>();
-        builder.Services.AddScoped<Radzen.TooltipService>();
+        builder.Services.AddRadzenComponents();
 
 // Настраиваем HttpClient после его создания, добавляя к нему CookieHandler
         builder.Services.AddHttpClient<IAccountService, AccountService>("API", client =>

@@ -1,4 +1,6 @@
-﻿using System.Security.Claims;
+﻿using System;
+using System.Security.Claims;
+using System.Threading.Tasks;
 using Diploma.Common.Models;
 using Microsoft.AspNetCore.Components.Authorization;
 
@@ -58,7 +60,7 @@ public class CookieAuthenticationStateProvider : AuthenticationStateProvider
     private async Task<DateTime?> GetCookieExpiration(string key)
     {
         var expiration = await cookieService.GetCookies(key + "_Expires");
-        if (!string.IsNullOrEmpty(expiration) && DateTime.TryParse(expiration, out DateTime expirationDateTime))
+        if (!string.IsNullOrEmpty(expiration) && DateTime.TryParse(expiration as string, out DateTime expirationDateTime))
         {
             return expirationDateTime;
         }

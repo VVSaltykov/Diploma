@@ -1,6 +1,7 @@
 ﻿using Diploma.API.Repositories;
 using Diploma.Common.Models;
 using Diploma.Common.Models.Enums;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Diploma.API.Controllers;

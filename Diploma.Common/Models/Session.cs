@@ -1,4 +1,6 @@
-﻿namespace Diploma.Common.Models;
+﻿using System;
+
+namespace Diploma.Common.Models;
 
 public class Session
 {

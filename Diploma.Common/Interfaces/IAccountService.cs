@@ -1,4 +1,5 @@
-﻿using Diploma.Common.Models;
+﻿using System.Threading.Tasks;
+using Diploma.Common.Models;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Refit;

@@ -12,37 +12,19 @@
     <CascadingAuthenticationState>
         <AuthorizeView>
             <Authorized>
-                <RadzenLayout style="grid-template-areas: 'rz-sidebar rz-header' 'rz-sidebar rz-body';">
+                <RadzenLayout style="position: relative">
                     <RadzenHeader>
-                        <RadzenRow JustifyContent="JustifyContent.Start" AlignItems="AlignItems.Center" Gap="0">
-                            <RadzenColumn Size="5">
-                                <RadzenSidebarToggle Click="@SidebarToggleClick"></RadzenSidebarToggle>
-                            </RadzenColumn>
-                            <RadzenColumn Size="7">
-                                <RadzenStack AlignItems="AlignItems.Center" Orientation="Orientation.Horizontal" JustifyContent="JustifyContent.End">
-                                    @SessionsService.SessionData.User.Name
-                                </RadzenStack>
-                            </RadzenColumn>
-                        </RadzenRow>
+                        <RadzenStack Orientation="Orientation.Horizontal" AlignItems="AlignItems.Center" Gap="0">
+                            <RadzenSidebarToggle Click="@(() => sidebarExpanded = !sidebarExpanded)" />
+                            <RadzenLabel>@SessionsService.SessionData.User.Name</RadzenLabel>
+                        </RadzenStack>
                     </RadzenHeader>
-                    <RadzenBody Expanded="@sidebarExpanded">
-                        <RadzenRow class="rz-mx-auto rz-px-4 rz-pt-2 rz-pt-md-4 rz-pt-lg-6 rz-pt-xl-12 rz-pb-2 rz-pb-lg-12" Style="max-width: 1440px;">
-                            <RadzenColumn Size="12">
-                                @Body
-                            </RadzenColumn>
-                        </RadzenRow>
-                    </RadzenBody>
-                    <RadzenSidebar Expanded="@sidebarExpanded" style="z-index: 2; background-color: #06298E;">
-                        <RadzenStack AlignItems="AlignItems.Center" class="rz-py-4 rz-py-lg-6" Style="padding: var(--rz-panel-menu-item-padding); border-bottom: var(--rz-panel-menu-item-border);">
-                            <RadzenText Text="Кафедра №609" TextStyle="TextStyle.Subtitle1" class="rz-mb-0" style="color: var(--rz-sidebar-color);"/>
-                        </RadzenStack>
-
+                    <RadzenSidebar Responsive="false" @bind-Expanded="@sidebarExpanded">
                         <NavMenu></NavMenu>
-
-                        <RadzenStack AlignItems="AlignItems.Center" Gap="0" class="rz-py-4 rz-py-lg-6" Style="padding: var(--rz-panel-menu-item-padding);">
-                            <RadzenText Text="Авторское право Ⓒ 2024" TextStyle="TextStyle.Caption" class="rz-mb-0" style="color: var(--rz-text-disabled-color);" TagName="TagName.P" TextAlign="TextAlign.Center"/>
-                        </RadzenStack>
                     </RadzenSidebar>
+                    <RadzenBody Style="background-color: white">
+                            @Body
+                    </RadzenBody>
                 </RadzenLayout>
             </Authorized>
             <NotAuthorized>

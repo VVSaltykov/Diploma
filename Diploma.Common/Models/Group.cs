@@ -1,4 +1,6 @@
-﻿namespace Diploma.Common.Models;
+﻿using System.Collections.Generic;
+
+namespace Diploma.Common.Models;
 
 public class Group : BaseEntity<int>
 {

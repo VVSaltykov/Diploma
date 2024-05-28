@@ -27,6 +27,12 @@ public class MessageController : BotController
         _usersActionsService = usersActionsService;
         _buttonsGenerationService = buttonsGenerationService;
     }
+    
+    [Message]
+    public async Task ToDelete()
+    {
+        await Client.SendTextMessageAsync(Update.Message.Chat.Id, "asdadsasd");
+    }
 
     [Message("Отправить сообщение")]
     public async Task InitHandling()

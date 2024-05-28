@@ -16,14 +16,11 @@ public class SignalRService
         _telegramBotClient = telegramBotClient;
 
         _hubConnection = new HubConnectionBuilder()
-            .WithUrl("https://localhost:7165/messageHub") // Укажите правильный URL для вашего API
+            .WithUrl("https://localhost:7165/messageHub")
             .Build();
 
         _hubConnection.On<Messages>("ReceiveMessage", async message =>
         {
-            // Логика обработки полученного сообщения
-            Console.WriteLine($"Received message: {message.Tittle}");
-            // Вызываем метод для отправки сообщения в телеграм боте
             await SendMessageToTelegramUser(message);
         });
     }

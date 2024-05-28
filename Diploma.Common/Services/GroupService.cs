@@ -1,4 +1,7 @@
-﻿using Diploma.Common.Interfaces;
+﻿using System.Collections.Generic;
+using System.Net.Http;
+using System.Threading.Tasks;
+using Diploma.Common.Interfaces;
 using Diploma.Common.Models;
 using Diploma.Common.Utils;
 

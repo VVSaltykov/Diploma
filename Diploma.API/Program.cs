@@ -16,7 +16,7 @@ public class Program
         
         builder.Services.AddDbContext<AppDbContext>(options =>
         {
-            options.UseNpgsql(builder.Configuration.GetConnectionString("CompetitionsWebDbConnection"));
+            options.UseNpgsql(builder.Configuration.GetConnectionString("MAIDbConnection"));
         });
 
         builder.Services.AddSignalR();
@@ -55,7 +55,9 @@ public class Program
         builder.Services.AddTransient<UserRepository>();
         builder.Services.AddTransient<GroupRepository>();
         builder.Services.AddTransient<MessagesRepository>();
+        builder.Services.AddTransient<SaltRepository>();
         builder.Services.AddSingleton<SessionService>();
+        builder.Services.AddTransient<SaltService>();
         
 
         var app = builder.Build();

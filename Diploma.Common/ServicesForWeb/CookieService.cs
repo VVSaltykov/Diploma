@@ -1,5 +1,7 @@
-﻿using System.Security.Claims;
+﻿using System;
+using System.Security.Claims;
 using System.Text;
+using System.Threading.Tasks;
 using Microsoft.JSInterop;
 using Newtonsoft.Json;
 
@@ -16,7 +18,7 @@ public class CookieService
 
     public async Task SetCookies(string key, string value)
     {
-        var expirationTime = DateTime.UtcNow;
+        var expirationTime = DateTime.UtcNow.AddHours(1);
         await jsRuntime.InvokeAsync<object>("WriteCookie.WriteCookie", key, value, expirationTime);
         await jsRuntime.InvokeAsync<object>("WriteCookie.WriteCookie", key + "_Expires", expirationTime.ToString(), expirationTime);
     }

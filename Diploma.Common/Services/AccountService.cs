@@ -1,4 +1,7 @@
-﻿using System.Security.Claims;
+﻿using System;
+using System.Net.Http;
+using System.Security.Claims;
+using System.Threading.Tasks;
 using Diploma.Common.Interfaces;
 using Diploma.Common.Models;
 using Diploma.Common.Utils;

@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using Diploma.API;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
@@ -12,9 +13,11 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace Diploma.API.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    partial class AppDbContextModelSnapshot : ModelSnapshot
+    [Migration("20240527175810_addhash")]
+    partial class addhash
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -38,6 +41,21 @@ namespace Diploma.API.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("Groups");
+                });
+
+            modelBuilder.Entity("Diploma.Common.Models.Hash", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<byte[]>("HashSalt")
+                        .IsRequired()
+                        .HasColumnType("bytea");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Hashes");
                 });
 
             modelBuilder.Entity("Diploma.Common.Models.Messages", b =>
@@ -80,21 +98,6 @@ namespace Diploma.API.Migrations
                     b.ToTable("Messages");
                 });
 
-            modelBuilder.Entity("Diploma.Common.Models.Salt", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uuid");
-
-                    b.Property<byte[]>("HashSalt")
-                        .IsRequired()
-                        .HasColumnType("bytea");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("Hashes");
-                });
-
             modelBuilder.Entity("Diploma.Common.Models.User", b =>
                 {
                     b.Property<Guid>("Id")
@@ -106,6 +109,9 @@ namespace Diploma.API.Migrations
 
                     b.Property<int?>("GroupId")
                         .HasColumnType("integer");
+
+                    b.Property<Guid?>("HashId")
+                        .HasColumnType("uuid");
 
                     b.Property<string>("Login")
                         .HasColumnType("text");
@@ -123,9 +129,6 @@ namespace Diploma.API.Migrations
                     b.Property<int>("Role")
                         .HasColumnType("integer");
 
-                    b.Property<Guid?>("SaltId")
-                        .HasColumnType("uuid");
-
                     b.Property<string>("Token")
                         .HasColumnType("text");
 
@@ -133,7 +136,7 @@ namespace Diploma.API.Migrations
 
                     b.HasIndex("GroupId");
 
-                    b.HasIndex("SaltId");
+                    b.HasIndex("HashId");
 
                     b.ToTable("Users");
                 });
@@ -155,13 +158,13 @@ namespace Diploma.API.Migrations
                         .WithMany("Users")
                         .HasForeignKey("GroupId");
 
-                    b.HasOne("Diploma.Common.Models.Salt", "Salt")
+                    b.HasOne("Diploma.Common.Models.Hash", "Hash")
                         .WithMany()
-                        .HasForeignKey("SaltId");
+                        .HasForeignKey("HashId");
 
                     b.Navigation("Group");
 
-                    b.Navigation("Salt");
+                    b.Navigation("Hash");
                 });
 
             modelBuilder.Entity("Diploma.Common.Models.Group", b =>

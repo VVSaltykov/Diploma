@@ -1,23 +1,19 @@
 ﻿@using Microsoft.AspNetCore.Components.Authorization
-<RadzenPanelMenu Style="background-color: #06298E; color: white; flood-color: white;">
-    <RadzenPanelMenuItem Text="Сообщения" Icon="event" IconColor="@Colors.White" Style="background-color: #06298E" Path="/"/>
+
+
+<RadzenPanelMenu DisplayStyle="@(sidebarExpanded ? MenuItemDisplayStyle.IconAndText : MenuItemDisplayStyle.Icon)" ShowArrow="false">
+    <RadzenPanelMenuItem Text="Сообщения" Icon="event" IconColor="@Colors.Secondary" Path="/"/>
     <AuthorizeView Roles="Professor">
-        <RadzenPanelMenuItem Text="Личные сообщения" Icon="event" IconColor="@Colors.White" Style="background-color: #06298E" Path="/PrivateMessages"/>
+        <RadzenPanelMenuItem Text="Личные сообщения" Icon="event" IconColor="@Colors.Secondary" Path="/PrivateMessages"/>
     </AuthorizeView>
-    <RadzenPanelMenuItem Text="Пользователи Telegram" Icon="accessibility" IconColor="@Colors.White" Style="background-color: #06298E" Path="/TelegramUsers"/>
+    <RadzenPanelMenuItem Text="Пользователи Telegram" Icon="accessibility" IconColor="@Colors.Secondary" Path="/TelegramUsers"/>
     <AuthorizeView Roles="Admin">
-        <RadzenPanelMenuItem Text="Пользователи Web" Icon="accessibility" IconColor="@Colors.White" Style="background-color: #06298E" Path="/WebUsers"/>
+        <RadzenPanelMenuItem Text="Пользователи Web" Icon="accessibility" IconColor="@Colors.Secondary" Path="/WebUsers"/>
     </AuthorizeView>
 </RadzenPanelMenu>
 
-@code {
-    private bool collapseNavMenu = true;
+@code{
 
-    private string? NavMenuCssClass => collapseNavMenu ? "collapse" : null;
-
-    private void ToggleNavMenu()
-    {
-        collapseNavMenu = !collapseNavMenu;
-    }
+    bool sidebarExpanded = true;
 
 }
