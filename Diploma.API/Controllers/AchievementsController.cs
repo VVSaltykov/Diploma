@@ -28,6 +28,7 @@ public class AchievementsController : ControllerBase
     {
         Achievements _achievement = new Achievements
         {
+            Tittle = achievement.Tittle,
             Text = achievement.Text,
         };
         
@@ -49,7 +50,7 @@ public class AchievementsController : ControllerBase
         
         Messages _messages = new Messages
         {
-            Tittle = "Достижение",
+            Tittle = _achievement.Tittle,
             Text = _achievement.Text,
             DateTime = DateTime.UtcNow,
             RecepientInTelegramIds = telegramUserChatIds.Cast<long?>().ToList(),

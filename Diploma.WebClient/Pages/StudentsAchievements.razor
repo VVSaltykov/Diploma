@@ -1,0 +1,73 @@
+﻿@page "/StudentsAchievements"
+@using Diploma.Common.Interfaces
+@using Diploma.Common.Models
+@using Diploma.Common.Models.Enums
+@using Diploma.WebClient.Pages.Modals
+@using Microsoft.AspNetCore.Authorization
+@using Microsoft.AspNetCore.Components.Authorization
+@inject IAchievementsService AchievementsService
+@inject IUserService UserService
+@inject DialogService DialogService
+
+
+@layout MainLayout
+@attribute [Authorize]
+
+<AuthorizeView>
+    <Authorized>
+        <RadzenButton Text="Создать достижение" Click="@OpenCreateAchievementDialog"/>
+        <div class="rz-m-1 rz-mb-0" style="width: 98%; height: 98%">
+            <RadzenGrid Data="@AchievementsList" TItem="Achievements" EmptyText="Нет пользователей" AllowFiltering="false" AllowPaging="true" PageSize="7"
+                        AllowSorting="true">
+                <Columns>
+                    <RadzenGridColumn TItem="Achievements" Property="Tittle" Title="Заголовок"/>
+                    <RadzenGridColumn TItem="Achievements" Title="Действие">
+                        <Template Context="achievement">
+                            <RadzenButton Text="Просмотреть" Click="@(() => CheckAchievementDetails(achievement))"/>
+                        </Template>
+                    </RadzenGridColumn>
+                </Columns>
+            </RadzenGrid>
+        </div>
+    </Authorized>
+</AuthorizeView>
+
+
+@code {
+    [CascadingParameter]
+    public Session? CurrentSession { get; set; }
+    
+    private List<Achievements> AchievementsList { get; set; }
+
+    protected async override Task OnInitializedAsync()
+    {
+        AchievementsList = await AchievementsService.GetAll();
+    }
+    
+    private async Task OpenCreateAchievementDialog()
+    {
+        var telegramUsers = await UserService.GetTelegramUsers();
+        var students = telegramUsers.Where(u => u.Role == Role.Student || u.Role == Role.Graduate).ToList();
+        var parameters = new Dictionary<string, object>
+        {
+            { "TelegramUsers", students }
+        };
+        
+        var result = await DialogService.OpenAsync<CreateAchievement>("Отправить сообщение", parameters);
+        if (result != null)
+        {
+            Achievements achievement = (Achievements)result;
+            await AchievementsService.Create(achievement);
+        }
+    }
+    
+    private async Task CheckAchievementDetails(Achievements achievement)
+    {
+        var parameters = new Dictionary<string, object>
+        {
+            { "Achievements", achievement }
+        };
+        
+        await DialogService.OpenAsync<AchievementDetails>("Достижение", parameters);
+    }
+}

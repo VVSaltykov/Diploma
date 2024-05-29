@@ -106,7 +106,7 @@ public class AchievementsController : BotController
         var currentAchievement = state.Achievements[state.CurrentAchievementIndex];
 
 
-        var formattedMessage = $"**Достижение:**\n{currentAchievement.Text}\n\n**Список участников:**\n\n";
+        var formattedMessage = $"**{currentAchievement.Tittle}:**\n{currentAchievement.Text}\n\n**Список участников:**\n\n";
 
         foreach (var user in currentAchievement.Users)
         {

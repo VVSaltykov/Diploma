@@ -1,0 +1,40 @@
+﻿@using Diploma.Common.Models
+@layout MainLayout
+
+<RadzenTemplateForm TItem="Achievements" Data="@Achievements">
+    <div class="row" style="margin-bottom: 16px">
+        <div class="col-md-3">
+            <RadzenLabel Text="Заголовок"/>
+        </div>
+        <div class="col">
+            <RadzenTextBox @bind-Value="@Achievements.Tittle" Name="Tittle" Disabled="true"/>
+        </div>
+    </div>
+    <div class="row" style="margin-bottom: 16px">
+        <div class="col-md-3">
+            <RadzenLabel Text="Ответ"/>
+        </div>
+        <div class="col">
+            <RadzenTextArea @bind-Value="@Achievements.Text" Name="Text" Rows="5" Style="width: 100%;" Disabled="true"/>
+        </div>
+    </div>
+    <div class="row" style="margin-bottom: 16px">
+        <div class="col-md-3">
+            <RadzenLabel Text="Users"/>
+        </div>
+        <div class="col">
+            <RadzenTextArea Value="@GetUsersText()" Name="UsersText" Rows="5" Style="width: 100%;" Disabled="true"/>
+        </div>
+    </div>
+</RadzenTemplateForm>
+
+@code {
+    [Parameter] public Achievements Achievements { get; set; }
+
+    private string GetUsersText()
+    {
+        return Achievements.Users != null && Achievements.Users.Any()
+            ? string.Join(", ", Achievements.Users.Select(u => u.Name))
+            : "No users";
+    }
+}
