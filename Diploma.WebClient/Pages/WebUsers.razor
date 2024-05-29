@@ -1,6 +1,7 @@
 ﻿@page "/WebUsers"
 @using Diploma.Common.Models
 @using Diploma.Common.Interfaces
+@using Diploma.Common.Utils
 @using Diploma.WebClient.Pages.Modals
 @using Microsoft.AspNetCore.Authorization
 @using Microsoft.AspNetCore.Components.Authorization
@@ -23,7 +24,7 @@
                     <RadzenGridColumn TItem="User" Property="Password" Title="Пароль"/>
                     <RadzenGridColumn TItem="User" Property="Role" Title="Роль">
                         <Template Context="user">
-                            @user.Role
+                            @user.Role.GetDisplayName()
                         </Template>
                     </RadzenGridColumn>
                 </Columns>

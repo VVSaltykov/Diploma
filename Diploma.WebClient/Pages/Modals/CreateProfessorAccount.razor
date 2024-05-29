@@ -1,6 +1,8 @@
 ﻿@using Diploma.Common.Models
 @using Diploma.Common.Models.Enums
+@using Diploma.Common.Utils
 @using Microsoft.AspNetCore.Components.Authorization
+@using EnumExtensions = Diploma.Common.Utils.EnumExtensions
 @layout MainLayout
 @inject DialogService DialogService
 
@@ -34,7 +36,11 @@
                 <RadzenLabel Text="Роль"/>
             </div>
             <div class="col">
-                <RadzenDropDown @bind-Value="@RegistrationModel.Role" Data="@(Enum.GetValues<Role>().ToList())" Name="Role"/>
+                <RadzenDropDown @bind-Value="@RegistrationModel.Role"
+                                Data="@roleItems"
+                                TextProperty="DisplayName"
+                                ValueProperty="Value"
+                                Name="Role"/>
             </div>
         </div>
         <div class="row justify-content-center">
@@ -51,7 +57,13 @@
     public Session? CurrentSession { get; set; }
     
     private RegistrationModel RegistrationModel { get; set; } = new RegistrationModel();
-
+    private List<EnumDisplayItem<Role>> roleItems;
+    
+    protected override void OnInitialized()
+    {
+        roleItems = EnumExtensions.GetFilteredEnumDisplayItems<Role>(role => role == Role.Admin || role == Role.Professor);
+    }
+    
     private void SubmitForm(RegistrationModel model)
     {
         // Обработка отправки формы

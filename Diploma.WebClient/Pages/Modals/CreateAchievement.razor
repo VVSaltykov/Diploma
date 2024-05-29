@@ -1,4 +1,5 @@
 ﻿@using Diploma.Common.Models
+@using Diploma.Common.Utils
 
 
 @layout MainLayout
@@ -47,7 +48,7 @@
                 <RadzenDataGridColumn TItem="User" Property="Name" Title="ФИО"/>
                 <RadzenDataGridColumn TItem="User" Property="Role" Title="Роль">
                     <Template Context="user">
-                        @user.Role
+                        @user.Role.GetDisplayName()
                     </Template>
                 </RadzenDataGridColumn>
                 <RadzenDataGridColumn TItem="User" Title="Группа">
@@ -85,7 +86,7 @@
                 <RadzenDataGridColumn TItem="User" Property="Name" Title="ФИО"/>
                 <RadzenDataGridColumn TItem="User" Property="Role" Title="Роль">
                     <Template Context="user">
-                        @user.Role
+                        @user.Role.GetDisplayName()
                     </Template>
                 </RadzenDataGridColumn>
                 <RadzenDataGridColumn TItem="User" Title="Группа">

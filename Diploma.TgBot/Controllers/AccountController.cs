@@ -29,6 +29,7 @@ public class AccountController : BotController
     private static string name;
     private static string groupName;
     private static Role role;
+    private bool IsProfessor = false;
 
     public AccountController(IUsersActionsService usersActionsService, IInlineButtonsGenerationService buttonsGenerationService)
     {
