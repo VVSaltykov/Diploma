@@ -46,7 +46,7 @@
                     </Template>
                 </RadzenDataGridColumn>
                 <RadzenDataGridColumn TItem="User" Property="Name" Title="ФИО"/>
-                <RadzenDataGridColumn TItem="User" Property="Role" Title="Роль">
+                <RadzenDataGridColumn TItem="User" Property="Role" Title="Роль" Width="20%">
                     <Template Context="user">
                         @user.Role.GetDisplayName()
                     </Template>
@@ -84,7 +84,7 @@
                     </Template>
                 </RadzenDataGridColumn>
                 <RadzenDataGridColumn TItem="User" Property="Name" Title="ФИО"/>
-                <RadzenDataGridColumn TItem="User" Property="Role" Title="Роль">
+                <RadzenDataGridColumn TItem="User" Property="Role" Title="Роль" Width="20%">
                     <Template Context="user">
                         @user.Role.GetDisplayName()
                     </Template>

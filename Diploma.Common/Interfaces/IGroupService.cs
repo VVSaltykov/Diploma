@@ -16,4 +16,7 @@ public interface IGroupService
 
     [Post("/api/Group/GetAll")]
     Task<List<Group>> GetAll();
+
+    [Post("/api/Group/GetGroupById")]
+    Task<Group> GetGroupById(int? groupId);
 }

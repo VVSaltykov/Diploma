@@ -16,12 +16,6 @@ public class Program
 
         var app = builder.Build();
         
-        app.MapGet("/", (HttpContext context) =>
-        {
-            context.Response.StatusCode = 204; // No Content
-            return Task.CompletedTask;
-        });
-        
         var signalRService = app.Services.GetRequiredService<SignalRService>();
         signalRService.StartAsync().Wait();
         

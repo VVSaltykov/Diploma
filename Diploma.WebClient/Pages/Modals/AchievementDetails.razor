@@ -1,4 +1,11 @@
-﻿@using Diploma.Common.Models
+﻿@using System.Text
+@using Diploma.Common.Interfaces
+@using Diploma.Common.Models
+@using Microsoft.VisualBasic
+@using Group = Diploma.Common.Models.Group
+@using User = Telegram.Bot.Types.User
+@inject IGroupService GroupService
+
 @layout MainLayout
 
 <RadzenTemplateForm TItem="Achievements" Data="@Achievements">
@@ -7,12 +14,12 @@
             <RadzenLabel Text="Заголовок"/>
         </div>
         <div class="col">
-            <RadzenTextBox @bind-Value="@Achievements.Tittle" Name="Tittle" Disabled="true"/>
+            <RadzenTextBox @bind-Value="@Achievements.Tittle" Name="Tittle" Disabled="true" Style="width: 100%"/>
         </div>
     </div>
     <div class="row" style="margin-bottom: 16px">
         <div class="col-md-3">
-            <RadzenLabel Text="Ответ"/>
+            <RadzenLabel Text="Текст"/>
         </div>
         <div class="col">
             <RadzenTextArea @bind-Value="@Achievements.Text" Name="Text" Rows="5" Style="width: 100%;" Disabled="true"/>
@@ -20,10 +27,10 @@
     </div>
     <div class="row" style="margin-bottom: 16px">
         <div class="col-md-3">
-            <RadzenLabel Text="Users"/>
+            <RadzenLabel Text="Студенты"/>
         </div>
         <div class="col">
-            <RadzenTextArea Value="@GetUsersText()" Name="UsersText" Rows="5" Style="width: 100%;" Disabled="true"/>
+            <RadzenTextArea @bind-Value="usersText" Name="UsersText" Rows="5" Style="width: 100%;" Disabled="true"/>
         </div>
     </div>
 </RadzenTemplateForm>
@@ -31,10 +38,36 @@
 @code {
     [Parameter] public Achievements Achievements { get; set; }
 
-    private string GetUsersText()
+    private List<Group> Groups { get; set; } = new List<Group>();
+    private string usersText;
+
+    protected override async Task OnInitializedAsync()
     {
-        return Achievements.Users != null && Achievements.Users.Any()
-            ? string.Join(", ", Achievements.Users.Select(u => u.Name))
-            : "No users";
+        usersText = await GetUsersText();
+    }
+
+    private async Task<string> GetUsersText()
+    {
+        Groups = await GroupService.GetAll();
+
+        try
+        {
+            var usersText = new StringBuilder();
+
+            foreach (var group in Groups)
+            {
+                var groupUsers = Achievements.Users.Where(user => group.Users.Any(groupUser => groupUser.Id == user.Id)).ToList();
+                foreach (var user in groupUsers)
+                {
+                    usersText.Append($"{user.Name} ({group.Name}), ");
+                }
+            }
+
+            return usersText.ToString().TrimEnd(',', ' ');
+        }
+        catch (Exception ex)
+        {
+            return null;
+        }
     }
 }

@@ -15,7 +15,7 @@
 
 <AuthorizeView>
     <Authorized>
-        <RadzenButton Text="Отправить сообщение" Click="@OpenSendMessageDialog"/>
+        <RadzenButton Text="Отправить сообщение" Click="@OpenSendMessageDialog" style="margin-bottom: 10px;"/>
             <RadzenGrid Data="@MessagesList" TItem="Messages" EmptyText="Нет сообщений" AllowFiltering="false" AllowPaging="true" PageSize="7"
                         AllowSorting="true">
                 <Columns>
@@ -25,7 +25,7 @@
                         <Template Context="message">
                             @if (!message.IsAnonymous)
                             {
-                                @message.User.Name
+                                @message.User.Name @if (message.User.Group != null) { @($"({message.User.Group.Name})") }
                             }
                             else
                             {
@@ -33,12 +33,12 @@
                             }
                         </Template>
                     </RadzenGridColumn>
-                    <RadzenGridColumn TItem="Messages" Title="Действие">
+                    <RadzenGridColumn TItem="Messages" Title="Просмотреть" Width="11%" TextAlign="TextAlign.Center">
                         <Template Context="message">
-                            <RadzenButton Text="Просмотреть" Click="@(() => CheckMessageDetails(message))"/>
+                            <RadzenButton Icon="privacy_tip" Click="@(() => CheckMessageDetails(message))"/>
                         </Template>
                     </RadzenGridColumn>
-                    <RadzenGridColumn TItem="Messages" Title="Действие">
+                    <RadzenGridColumn TItem="Messages" Title="Действие" Width="20%">
                         <Template Context="message">
                             <RadzenButton Text="Ответить" Click="@(() => CreateAnswer(message))"/>
                         </Template>
@@ -67,6 +67,15 @@
             Groups = await GroupService.GetAll();
             UsersTelegram = await UserService.GetTelegramUsers();
             MessagesList = await MessagesService.GetAll(UsersTelegram);
+            
+            foreach (var message in MessagesList)
+            {
+                if (message.User.GroupId > 0)
+                {
+                    message.User.Group = await GroupService.GetGroupById(message.User.GroupId);
+                }
+            }
+            
             StateHasChanged();
         }
         catch (Exception ex) {}

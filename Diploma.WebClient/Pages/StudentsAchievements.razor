@@ -13,22 +13,36 @@
 @layout MainLayout
 @attribute [Authorize]
 
-<AuthorizeView>
+<AuthorizeView Policy="IsAdmin">
     <Authorized>
-        <RadzenButton Text="Создать достижение" Click="@OpenCreateAchievementDialog"/>
-        <div class="rz-m-1 rz-mb-0" style="width: 98%; height: 98%">
-            <RadzenGrid Data="@AchievementsList" TItem="Achievements" EmptyText="Нет пользователей" AllowFiltering="false" AllowPaging="true" PageSize="7"
-                        AllowSorting="true">
-                <Columns>
-                    <RadzenGridColumn TItem="Achievements" Property="Tittle" Title="Заголовок"/>
-                    <RadzenGridColumn TItem="Achievements" Title="Действие">
-                        <Template Context="achievement">
-                            <RadzenButton Text="Просмотреть" Click="@(() => CheckAchievementDetails(achievement))"/>
-                        </Template>
-                    </RadzenGridColumn>
-                </Columns>
-            </RadzenGrid>
-        </div>
+        <RadzenButton Text="Создать достижение" Click="@OpenCreateAchievementDialog" style="margin-bottom: 10px;"/>
+        <RadzenGrid Data="@AchievementsList" TItem="Achievements" EmptyText="Нет пользователей" AllowFiltering="false" AllowPaging="true" PageSize="7"
+                    AllowSorting="true">
+            <Columns>
+                <RadzenGridColumn TItem="Achievements" Property="Tittle" Title="Заголовок"/>
+                <RadzenGridColumn TItem="Achievements" Title="Действие">
+                    <Template Context="achievement">
+                        <RadzenButton Text="Просмотреть" Click="@(() => CheckAchievementDetails(achievement))"/>
+                    </Template>
+                </RadzenGridColumn>
+            </Columns>
+        </RadzenGrid>
+    </Authorized>
+</AuthorizeView>
+
+<AuthorizeView Policy="IsProfessor">
+    <Authorized>
+        <RadzenGrid Data="@AchievementsList" TItem="Achievements" EmptyText="Нет пользователей" AllowFiltering="false" AllowPaging="true" PageSize="7"
+                    AllowSorting="true">
+            <Columns>
+                <RadzenGridColumn TItem="Achievements" Property="Tittle" Title="Заголовок"/>
+                <RadzenGridColumn TItem="Achievements" Title="Действие">
+                    <Template Context="achievement">
+                        <RadzenButton Text="Просмотреть" Click="@(() => CheckAchievementDetails(achievement))"/>
+                    </Template>
+                </RadzenGridColumn>
+            </Columns>
+        </RadzenGrid>
     </Authorized>
 </AuthorizeView>
 

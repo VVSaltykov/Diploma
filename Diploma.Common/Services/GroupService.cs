@@ -31,4 +31,9 @@ public class GroupService : IGroupService
         var groups = await _groupService.GetAll();
         return groups;
     }
+
+    public async Task<Group> GetGroupById(int? groupId)
+    {
+        return await _groupService.GetGroupById(groupId);
+    }
 }

@@ -40,4 +40,11 @@ public class GroupController : ControllerBase
         Group group = await _groupRepository.GetGroupByName(name);
         return group;
     }
+    
+    [HttpPost("GetGroupById")]
+    public async Task<Group> GetGroupById(int? groupId)
+    {
+        Group group = await _groupRepository.ReadFirst(g => g.Id == groupId);
+        return group;
+    }
 }
