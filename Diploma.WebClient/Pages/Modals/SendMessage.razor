@@ -1,9 +1,12 @@
 ﻿@using Diploma.Common.Interfaces
 @using Diploma.Common.Models
+@using System.IO;
 @using Diploma.Common.Utils
 @using Group = Diploma.Common.Models.Group
 @layout MainLayout
 @inject DialogService DialogService
+@inject IFilesService FilesService
+@inject NotificationService NotificationService
 
 <RadzenTemplateForm TItem="Messages" Data="@Messages" Submit="@SubmitForm">
     <div class="row" style="margin-bottom: 16px">
@@ -106,65 +109,73 @@
         }
     </RadzenStack>
     
-        <RadzenStack>
+    <RadzenStack>
             
-            <RadzenText class="ms-3">
-                Выберите группы, студентам которых хотите отправить сообщение
-            </RadzenText>
+        <RadzenText class="ms-3">
+            Выберите группы, студентам которых хотите отправить сообщение
+        </RadzenText>
             
-            @if (Groups.Any())
-            {
-                <RadzenDataGrid @ref="GroupGrid" AllowRowSelectOnRowClick="@_allowRowSelectOnRowClick" AllowFiltering="false" AllowPaging="true" PageSize="11"
-                                AllowSorting="true" Data="@Groups" TItem="Group" ColumnWidth="120px"
-                                SelectionMode="DataGridSelectionMode.Multiple" @bind-Value="@_selectedGroups" class="m-4">
-                    <Columns>
-                        <RadzenDataGridColumn TItem="Group" Width="60px" Sortable="false" Filterable="false">
-                            <HeaderTemplate>
-                                <RadzenCheckBox TabIndex="-1" TriState="false" TValue="bool?" InputAttributes="@(new Dictionary<string, object> { { "aria-label", "Select all items" } })"
-                                                Value="@(_selectedGroups == null || _selectedGroups?.Any() != true ? false : !Groups.All(i => _selectedGroups.Contains(i)) ? null : Groups.Any(i => _selectedGroups.Contains(i)))"
-                                                Change="@(args => _selectedGroups = args == true ? Groups.ToList() : null)"/>
-                            </HeaderTemplate>
-                            <Template Context="data">
-                                <RadzenCheckBox TabIndex="-1" TriState="false" Value="@(_selectedGroups != null && _selectedGroups.Contains(data))" InputAttributes="@(new Dictionary<string, object> { { "aria-label", "Select item" } })"
-                                                TValue="bool" Change="@(args => { if (!_allowRowSelectOnRowClick) { GroupGrid.SelectRow(data); } })"/>
-                            </Template>
-                        </RadzenDataGridColumn>
-                        <RadzenDataGridColumn TItem="Group" Property="Name" Title="Название"/>
-                        <RadzenDataGridColumn TItem="Group" Title="Количество студентов">
-                            <Template Context="group">
-                                @group.Users?.Count()
-                            </Template>
-                        </RadzenDataGridColumn>
-                    </Columns>
-                </RadzenDataGrid>
-            }
-            else
-            {
-                <RadzenDataGrid @ref="GroupGrid" AllowRowSelectOnRowClick="@_allowRowSelectOnRowClick" AllowFiltering="false" AllowPaging="true" PageSize="11"
-                                AllowSorting="true" Data="@Groups" TItem="Group" ColumnWidth="120px"
-                                SelectionMode="DataGridSelectionMode.Multiple" @bind-Value="@_selectedGroups" class="m-4">
-                    <Columns>
-                        <RadzenDataGridColumn TItem="Group" Width="60px" Sortable="false" Filterable="false">
-                            <HeaderTemplate>
-                                <RadzenCheckBox TabIndex="-1" TriState="false" TValue="bool?" InputAttributes="@(new Dictionary<string, object> { { "aria-label", "Select all items" } })"
-                                                Value="@(_selectedGroups == null || _selectedGroups?.Any() != true ? false : !Groups.All(i => _selectedGroups.Contains(i)) ? null : Groups.Any(i => _selectedGroups.Contains(i)))"
-                                                Change="@(args => _selectedGroups = args == true ? Groups.ToList() : null)"/>
-                            </HeaderTemplate>
-                            <Template Context="data">
-                                <RadzenCheckBox TabIndex="-1" TriState="false" Value="@(_selectedGroups != null && _selectedGroups.Contains(data))" InputAttributes="@(new Dictionary<string, object> { { "aria-label", "Select item" } })"
-                                                TValue="bool" Change="@(args => { if (!_allowRowSelectOnRowClick) { GroupGrid.SelectRow(data); } })"/>
-                            </Template>
-                        </RadzenDataGridColumn>
-                        <RadzenDataGridColumn TItem="Group" Property="Name" Title="Название"/>
-                        <RadzenDataGridColumn TItem="Group" Title="Количество студентов">
-                            <Template Context="group">
-                                @group.Users?.Count() ?? 0
-                            </Template>
-                        </RadzenDataGridColumn>
-                    </Columns>
-                </RadzenDataGrid>
-            }
-        </RadzenStack>
+        @if (Groups.Any())
+        {
+            <RadzenDataGrid @ref="GroupGrid" AllowRowSelectOnRowClick="@_allowRowSelectOnRowClick" AllowFiltering="false" AllowPaging="true" PageSize="11"
+                            AllowSorting="true" Data="@Groups" TItem="Group" ColumnWidth="120px"
+                            SelectionMode="DataGridSelectionMode.Multiple" @bind-Value="@_selectedGroups" class="m-4">
+                <Columns>
+                    <RadzenDataGridColumn TItem="Group" Width="60px" Sortable="false" Filterable="false">
+                        <HeaderTemplate>
+                            <RadzenCheckBox TabIndex="-1" TriState="false" TValue="bool?" InputAttributes="@(new Dictionary<string, object> { { "aria-label", "Select all items" } })"
+                                            Value="@(_selectedGroups == null || _selectedGroups?.Any() != true ? false : !Groups.All(i => _selectedGroups.Contains(i)) ? null : Groups.Any(i => _selectedGroups.Contains(i)))"
+                                            Change="@(args => _selectedGroups = args == true ? Groups.ToList() : null)"/>
+                        </HeaderTemplate>
+                        <Template Context="data">
+                            <RadzenCheckBox TabIndex="-1" TriState="false" Value="@(_selectedGroups != null && _selectedGroups.Contains(data))" InputAttributes="@(new Dictionary<string, object> { { "aria-label", "Select item" } })"
+                                            TValue="bool" Change="@(args => { if (!_allowRowSelectOnRowClick) { GroupGrid.SelectRow(data); } })"/>
+                        </Template>
+                    </RadzenDataGridColumn>
+                    <RadzenDataGridColumn TItem="Group" Property="Name" Title="Название"/>
+                    <RadzenDataGridColumn TItem="Group" Title="Количество студентов">
+                        <Template Context="group">
+                            @group.Users?.Count()
+                        </Template>
+                    </RadzenDataGridColumn>
+                </Columns>
+            </RadzenDataGrid>
+        }
+        else
+        {
+            <RadzenDataGrid @ref="GroupGrid" AllowRowSelectOnRowClick="@_allowRowSelectOnRowClick" AllowFiltering="false" AllowPaging="true" PageSize="11"
+                            AllowSorting="true" Data="@Groups" TItem="Group" ColumnWidth="120px"
+                            SelectionMode="DataGridSelectionMode.Multiple" @bind-Value="@_selectedGroups" class="m-4">
+                <Columns>
+                    <RadzenDataGridColumn TItem="Group" Width="60px" Sortable="false" Filterable="false">
+                        <HeaderTemplate>
+                            <RadzenCheckBox TabIndex="-1" TriState="false" TValue="bool?" InputAttributes="@(new Dictionary<string, object> { { "aria-label", "Select all items" } })"
+                                            Value="@(_selectedGroups == null || _selectedGroups?.Any() != true ? false : !Groups.All(i => _selectedGroups.Contains(i)) ? null : Groups.Any(i => _selectedGroups.Contains(i)))"
+                                            Change="@(args => _selectedGroups = args == true ? Groups.ToList() : null)"/>
+                        </HeaderTemplate>
+                        <Template Context="data">
+                            <RadzenCheckBox TabIndex="-1" TriState="false" Value="@(_selectedGroups != null && _selectedGroups.Contains(data))" InputAttributes="@(new Dictionary<string, object> { { "aria-label", "Select item" } })"
+                                            TValue="bool" Change="@(args => { if (!_allowRowSelectOnRowClick) { GroupGrid.SelectRow(data); } })"/>
+                        </Template>
+                    </RadzenDataGridColumn>
+                    <RadzenDataGridColumn TItem="Group" Property="Name" Title="Название"/>
+                    <RadzenDataGridColumn TItem="Group" Title="Количество студентов">
+                        <Template Context="group">
+                            @group.Users?.Count() ?? 0
+                        </Template>
+                    </RadzenDataGridColumn>
+                </Columns>
+            </RadzenDataGrid>
+        }
+    </RadzenStack>
+    <div class="row" style="margin-bottom: 16px">
+        <div class="col-md-3">
+            <RadzenLabel Text="Выберите файлы"/>
+        </div>
+        <div class="col">
+            <InputFile Multiple="true" OnChange="OnFileSelect" />
+        </div>
+    </div>
     <div class="row justify-content-center">
         <div class="col-md-3"></div>
         <div class="col-md-6 text-center">
@@ -184,7 +195,8 @@
     private IList<Group> _selectedGroups;
     private RadzenDataGrid<User> UserGrid;
     private RadzenDataGrid<Group> GroupGrid;
-    
+
+    private List<string> FileIds { get; set; } = new List<string>();
     private string ResponseText { get; set; }
 
     private void SubmitForm(Messages model)
@@ -209,6 +221,35 @@
 
         model.RecepientInTelegramIds = recipientIds.Distinct().ToList();
         model.Text = ResponseText;
+        model.FilesIds = FileIds;
         DialogService.Close(model);
+    }
+    
+    private async Task OnFileSelect(InputFileChangeEventArgs e)
+    {
+        foreach (var file in e.GetMultipleFiles())
+        {
+            using var fileStream = file.OpenReadStream();
+            var fileData = await ConvertStreamToByteArrayAsync(fileStream);
+            // Create a new file object and save it to the database
+            var newFile = new Files
+            {
+                FileId = IdGenerator.GenerateId(),
+                FileName = file.Name,
+                FileData = fileData
+            };
+            await FilesService.Create(newFile);
+            // Add the file ID to the message
+            FileIds.Add(newFile.FileId);
+        }
+    }
+    
+    private async Task<byte[]> ConvertStreamToByteArrayAsync(Stream stream)
+    {
+        using (var memoryStream = new MemoryStream())
+        {
+            await stream.CopyToAsync(memoryStream);
+            return memoryStream.ToArray();
+        }
     }
 }

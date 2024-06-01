@@ -34,7 +34,8 @@ public class MessagesController : ControllerBase
                 IsAnonymous = messages.IsAnonymous,
                 UserId = messages.UserId,
                 RecepientInTelegramIds = messages.RecepientInTelegramIds,
-                RecepientInWebIds = messages.RecepientInWebIds
+                RecepientInWebIds = messages.RecepientInWebIds,
+                FilesIds = messages.FilesIds
             };
             await _messagesRepository.Create(_messages);
             
@@ -68,7 +69,7 @@ public class MessagesController : ControllerBase
     {
         try
         {
-            var messages = (await _messagesRepository.Read(m => m.RecepientInWebIds.Contains(userId), m => m.User)).ToList();
+            var messages = (await _messagesRepository.Read(m => m.RecepientInWebIds.Contains(userId), include: m => m.User)).ToList();
             return messages;
         }
         catch (Exception ex)

@@ -1,4 +1,5 @@
 ﻿using System.Collections.Concurrent;
+using System.IO.Compression;
 using Diploma.Common.Models;
 using Diploma.Common.Models.Enums;
 using Diploma.Common.Services;
@@ -6,10 +7,12 @@ using Diploma.TgBot.Data;
 using Diploma.TgBot.Services;
 using Diploma.TgBot.UI;
 using Telegram.Bot;
+using Telegram.Bot.Types;
 using Telegram.Bot.Types.Enums;
 using Telegram.Bot.Types.ReplyMarkups;
 using TgBotLib.Core;
 using TgBotLib.Core.Base;
+using File = System.IO.File;
 
 namespace Diploma.TgBot.Controllers;
 
@@ -24,7 +27,7 @@ public class SendMessagesController : BotController
         _keyboardButtonsGenerationService = keyboardButtonsGenerationService;
     }
     
-    [Message("Мои сообщения", ignoreCase: true)]
+    [Message("Мои сообщения", MessageType.Text, ignoreCase: true)]
     public async Task SendMessages()
     {
         MessagesService messagesService = SingletonService.GetMessagesService();
@@ -104,6 +107,7 @@ public class SendMessagesController : BotController
 
     private async Task ShowCurrentMessage(UserMessagesState state)
     {
+        FilesService filesService = SingletonService.GetFilesService();
         var currentMessage = state.Messages[state.CurrentMessageIndex];
         
         var senderInfo = currentMessage.User != null ? $"**Отправитель:** {currentMessage.User.Name} ({currentMessage.User.Id})" : "Unknown User";
@@ -112,7 +116,35 @@ public class SendMessagesController : BotController
                                $"{senderInfo}\n\n" +
                                $"**Дата и время:** {currentMessage.DateTime}\n\n" +
                                $"**Текст:**\n{currentMessage.Text}";
-        
+
+        // Создаем пустой ZIP-архив
+        string zipFilePath = null;
+        if (currentMessage.FilesIds.Any())
+        {
+            var files = await filesService.GetFiles(currentMessage.FilesIds);
+            string tempDir = Path.Combine(Path.GetTempPath(), "TelegramFiles");
+            Directory.CreateDirectory(tempDir);
+
+            zipFilePath = Path.Combine(tempDir, "files.zip");
+            using (FileStream zipToOpen = new FileStream(zipFilePath, FileMode.Create))
+            {
+                using (ZipArchive archive = new ZipArchive(zipToOpen, ZipArchiveMode.Create))
+                {
+                    // Добавляем файлы в ZIP-архив
+                    foreach (var file in files)
+                    {
+                        // Добавляем файл в архив
+                        ZipArchiveEntry entry = archive.CreateEntry(file.FileName);
+                        using (Stream entryStream = entry.Open())
+                        {
+                            await entryStream.WriteAsync(file.FileData, 0, file.FileData.Length);
+                        }
+                    }
+                }
+            }
+        }
+
+        // Создаем InlineKeyboardMarkup
         var inlineKeyboardRows = new List<InlineKeyboardButton[]>
         {
             new []
@@ -134,17 +166,30 @@ public class SendMessagesController : BotController
         }
 
         var inlineKeyboard = new InlineKeyboardMarkup(inlineKeyboardRows);
-        
-        if (state.LastMessageId == 0)
+
+        // Отправляем сообщение с файлом (если он есть) или без него
+        if (zipFilePath != null)
         {
-            var removeKeyboardMessage = await Client.SendTextMessageAsync(Update.GetChatId(), ".", replyMarkup: new ReplyKeyboardRemove());
-            await Client.DeleteMessageAsync(Update.GetChatId(), removeKeyboardMessage.MessageId);
-            var sentMessage = await Client.SendTextMessageAsync(Update.GetChatId(), formattedMessage, replyMarkup: inlineKeyboard, parseMode: ParseMode.Markdown);
-            state.LastMessageId = sentMessage.MessageId;
+            using (var stream = File.OpenRead(zipFilePath))
+            {
+                // Создаем объект InputMediaDocument для отправки ZIP-архива
+                var fileName = "files.zip"; // Задайте имя файла
+                var inputMediaDocument = new InputFileStream(stream, fileName);
+
+                // Отправляем документ с сообщением и клавиатурой
+                await Client.SendDocumentAsync(Update.GetChatId(), inputMediaDocument, caption: formattedMessage, replyMarkup: inlineKeyboard, parseMode: ParseMode.Markdown);
+            }
         }
         else
         {
-            await Client.EditMessageTextAsync(Update.GetChatId(), state.LastMessageId, formattedMessage, replyMarkup: inlineKeyboard, parseMode: ParseMode.Markdown);
+            // Отправляем сообщение без файла, только с клавиатурой
+            await Client.SendTextMessageAsync(Update.GetChatId(), formattedMessage, replyMarkup: inlineKeyboard, parseMode: ParseMode.Markdown);
+        }
+
+        // Удаляем временную директорию, если она создавалась
+        if (zipFilePath != null)
+        {
+            Directory.Delete(Path.GetDirectoryName(zipFilePath), true);
         }
     }
 }

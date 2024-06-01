@@ -10,6 +10,8 @@ public class AppDbContext : DbContext
     public DbSet<Messages> Messages { get; set; }
     public DbSet<Salt> Hashes { get; set; }
     public DbSet<Achievements> Achievements { get; set; }
+    public DbSet<Files> Files { get; set; }
+    
     public AppDbContext(DbContextOptions<AppDbContext> options) : base(options)
     {
     }

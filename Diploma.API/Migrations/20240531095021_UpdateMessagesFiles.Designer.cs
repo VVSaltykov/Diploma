@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using Diploma.API;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
@@ -12,9 +13,11 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace Diploma.API.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    partial class AppDbContextModelSnapshot : ModelSnapshot
+    [Migration("20240531095021_UpdateMessagesFiles")]
+    partial class UpdateMessagesFiles
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -57,18 +60,14 @@ namespace Diploma.API.Migrations
                         .HasColumnType("bytea");
 
                     b.Property<string>("FileId")
+                        .IsRequired()
                         .HasColumnType("text");
 
                     b.Property<string>("FileName")
                         .IsRequired()
                         .HasColumnType("text");
 
-                    b.Property<int?>("MessagesId")
-                        .HasColumnType("integer");
-
                     b.HasKey("Id");
-
-                    b.HasIndex("MessagesId");
 
                     b.ToTable("Files");
                 });
@@ -196,13 +195,6 @@ namespace Diploma.API.Migrations
                     b.ToTable("Users");
                 });
 
-            modelBuilder.Entity("Diploma.Common.Models.Files", b =>
-                {
-                    b.HasOne("Diploma.Common.Models.Messages", null)
-                        .WithMany("FilesList")
-                        .HasForeignKey("MessagesId");
-                });
-
             modelBuilder.Entity("Diploma.Common.Models.Messages", b =>
                 {
                     b.HasOne("Diploma.Common.Models.User", "User")
@@ -241,11 +233,6 @@ namespace Diploma.API.Migrations
             modelBuilder.Entity("Diploma.Common.Models.Group", b =>
                 {
                     b.Navigation("Users");
-                });
-
-            modelBuilder.Entity("Diploma.Common.Models.Messages", b =>
-                {
-                    b.Navigation("FilesList");
                 });
 #pragma warning restore 612, 618
         }

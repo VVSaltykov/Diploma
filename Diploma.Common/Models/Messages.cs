@@ -12,6 +12,8 @@ public class Messages : BaseEntity<int>
     public bool IsAnonymous { get; set; }
     public List<long?> RecepientInTelegramIds { get; set; } = new List<long?>();
     public List<Guid?> RecepientInWebIds { get; set; } = new List<Guid?>();
+    public List<string>? FilesIds { get; set; } = new List<string>();
+    public List<Files>? FilesList { get; set; } = new List<Files>();
     
     public Guid UserId { get; set; }
     [ForeignKey("UserId")]

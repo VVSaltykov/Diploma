@@ -67,6 +67,14 @@ public class Program
         });
         builder.Services.AddSingleton<AchievementsService>();
         
+        builder.Services.AddSingleton<IFilesService, FilesService>(sp =>
+        {
+            var httpClient = new HttpClient { BaseAddress = new Uri("https://localhost:7165") };
+            // Можно настроить HttpClient здесь, если необходимо
+            return new FilesService(httpClient);
+        });
+        builder.Services.AddSingleton<FilesService>();
+        
         builder.Services.AddSingleton<IGroupService, GroupService>(sp =>
         {
             var httpClient = sp.GetRequiredService<HttpClient>();

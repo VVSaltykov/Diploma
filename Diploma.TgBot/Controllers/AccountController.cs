@@ -11,6 +11,7 @@ using Diploma.TgBot.UI;
 using Microsoft.EntityFrameworkCore;
 using Telegram.Bot;
 using Telegram.Bot.Types;
+using Telegram.Bot.Types.Enums;
 using Telegram.Bot.Types.ReplyMarkups;
 using TgBotLib.Core;
 using TgBotLib.Core.Base;
@@ -37,7 +38,7 @@ public class AccountController : BotController
         _buttonsGenerationService = buttonsGenerationService;
     }
     
-    [Message("/start")]
+    [Message("/start", MessageType.Text)]
     public async Task InitHandling()
     {
         try

@@ -1,4 +1,5 @@
 ﻿using System.Collections.Concurrent;
+using Diploma.Common.Interfaces;
 using Diploma.Common.Models;
 using Diploma.Common.Models.Enums;
 using Diploma.Common.Services;
@@ -9,6 +10,7 @@ using Diploma.TgBot.UI;
 using Microsoft.AspNetCore.Mvc;
 using Refit;
 using Telegram.Bot;
+using Telegram.Bot.Types.Enums;
 using Telegram.Bot.Types.ReplyMarkups;
 using TgBotLib.Core;
 using TgBotLib.Core.Base;
@@ -28,7 +30,7 @@ public class MessageController : BotController
         _buttonsGenerationService = buttonsGenerationService;
     }
 
-    [Message("Отправить сообщение")]
+    [Message("Отправить сообщение", MessageType.Text)]
     public async Task InitHandling()
     {
         long chatId = BotContext.Update.GetChatId();
@@ -76,7 +78,7 @@ public class MessageController : BotController
         
         await Client.SendTextMessageAsync(chatId, "Вы хотите отправить сообщение анонимно?", replyMarkup: replyMarkup);
     }
-
+    
     [ActionStep(nameof(MessageController), 2)]
     public async Task ThirdStep()
     {
@@ -87,9 +89,92 @@ public class MessageController : BotController
             var answer = Update.Message.Text;
             userState.IsAnonymous = answer == "Да";
 
+            await Client.SendTextMessageAsync(chatId, "Хотите ли вы прикрепить файлы к сообщению?", replyMarkup: new ReplyKeyboardMarkup(new[] { new KeyboardButton("Да"), new KeyboardButton("Нет") }) { ResizeKeyboard = true, OneTimeKeyboard = true });
+        }
+    }
+    
+    [ActionStep(nameof(MessageController), 3)]
+    public async Task FourthStep()
+    {
+        long chatId = BotContext.Update.GetChatId();
+        
+        if (userStates.TryGetValue(chatId, out var userState))
+        {
+            var answer = Update.Message.Text;
+            if (answer == "Да")
+            {
+                await Client.SendTextMessageAsync(chatId, "Пожалуйста, отправьте файл.");
+            }
+            else
+            {
+                await SendMessage(chatId);
+                _usersActionsService.IncrementStep(chatId);
+            }
+        }
+    }
+    
+    [ActionStep(nameof(MessageController), 4)]
+    public async Task FifthStep()
+    {
+        IFilesService filesService = SingletonService.GetFilesService();
+        long chatId = BotContext.Update.GetChatId();
+        
+        if (userStates.TryGetValue(chatId, out var userState))
+        {
+            if (Update.Message.Document != null)
+            {
+                string fileId = Update.Message.Document.FileId;
+                userState.FileIds.Add(fileId);
+
+                var fileStream = await GetFileStreamAsync(fileId); // Получаем поток файла
+                var fileData = await ConvertStreamToByteArrayAsync(fileStream); // Конвертируем поток в байты
+
+                Files file = new Files
+                {
+                    FileId = fileId,
+                    FileName = Update.Message.Document.FileName,
+                    FileData = fileData
+                };
+
+                await filesService.Create(file); // Сохраняем файл в базу данных
+                
+                await Client.SendTextMessageAsync(chatId, "Файл получен. Вы хотите прикрепить еще файл?", replyMarkup: new ReplyKeyboardMarkup(new[] { new KeyboardButton("Да"), new KeyboardButton("Нет") }) { ResizeKeyboard = true, OneTimeKeyboard = true });
+            }
+            else
+            {
+                await Client.SendTextMessageAsync(chatId, "Пожалуйста, отправьте файл.");
+            }
+        }
+    }
+    
+    [ActionStep(nameof(MessageController), 5)]
+    public async Task SixStep()
+    {
+        long chatId = BotContext.Update.GetChatId();
+        
+        if (userStates.TryGetValue(chatId, out var userState))
+        {
+            var answer = Update.Message.Text;
+            if (answer == "Да")
+            {
+                await Client.SendTextMessageAsync(chatId, "Пожалуйста, отправьте файл");
+                _usersActionsService.DecrementStep(chatId);
+            }
+            else
+            {
+                await SendMessage(chatId);
+            }
+        }
+    }
+    
+    
+    private async Task SendMessage(long chatId)
+    {
+        if (userStates.TryGetValue(chatId, out var userState))
+        {
             try
             {
-                await MessageHandler.SendMessage(chatId, userState.Title, userState.Text, userState.IsAnonymous);
+                await MessageHandler.SendMessage(chatId, userState.Title, userState.Text, userState.IsAnonymous, userState.FileIds);
                 
                 AccountService accountService = SingletonService.GetAccountService();
                 var user = await accountService.Read(chatId);
@@ -114,6 +199,25 @@ public class MessageController : BotController
                 // Очистка состояния пользователя после завершения
                 userStates.TryRemove(chatId, out _);
             }
+        }
+    }
+    
+    private async Task<Stream> GetFileStreamAsync(string fileId)
+    {
+        var file = await Client.GetFileAsync(fileId);
+        var memoryStream = new MemoryStream();
+        await Client.DownloadFileAsync(file.FilePath, memoryStream);
+        memoryStream.Seek(0, SeekOrigin.Begin); // Сбрасываем указатель потока в начало
+        return memoryStream;
+    }
+
+    // Метод для конвертации потока в массив байтов
+    private async Task<byte[]> ConvertStreamToByteArrayAsync(Stream stream)
+    {
+        using (var memoryStream = new MemoryStream())
+        {
+            await stream.CopyToAsync(memoryStream);
+            return memoryStream.ToArray();
         }
     }
 }

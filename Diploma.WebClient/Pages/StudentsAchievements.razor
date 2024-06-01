@@ -67,7 +67,7 @@
             { "TelegramUsers", students }
         };
         
-        var result = await DialogService.OpenAsync<CreateAchievement>("Отправить сообщение", parameters);
+        var result = await DialogService.OpenAsync<CreateAchievement>("Создать достижение", parameters);
         if (result != null)
         {
             Achievements achievement = (Achievements)result;

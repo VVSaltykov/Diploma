@@ -61,6 +61,7 @@ public class Program
         builder.Services.AddTransient<AchievementsRepository>();
         builder.Services.AddTransient<MessagesRepository>();
         builder.Services.AddTransient<SaltRepository>();
+        builder.Services.AddTransient<FilesRepository>();
         builder.Services.AddSingleton<SessionService>();
         builder.Services.AddTransient<SaltService>();
         

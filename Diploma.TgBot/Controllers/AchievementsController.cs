@@ -23,7 +23,7 @@ public class AchievementsController : BotController
         _keyboardButtonsGenerationService = keyboardButtonsGenerationService;
     }
     
-    [Message("Достижения учеников", ignoreCase: true)]
+    [Message("Достижения учеников", MessageType.Text, ignoreCase: true)]
     public async Task SendMessages()
     {
         IAchievementsService achievementsService = SingletonService.GetAchievementsService();

@@ -17,7 +17,6 @@ public class BotCommandsSetupService : IHostedService
         var commands = new[]
         {
             new BotCommand { Command = "start", Description = "На главную" },
-            new BotCommand { Command = "help", Description = "Получить помощь" }
         };
 
         await _botClient.SetMyCommandsAsync(commands, cancellationToken: cancellationToken);

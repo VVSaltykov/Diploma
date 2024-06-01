@@ -1,4 +1,8 @@
-﻿@using Diploma.Common.Models
+﻿@using Diploma.Common.Interfaces
+@using Diploma.Common.Models
+@inject IFilesService FilesService
+@inject IJSRuntime JSRuntime
+
 @layout MainLayout
 
 <RadzenTemplateForm TItem="Messages" Data="@Messages">
@@ -30,8 +34,48 @@
             <RadzenTextArea @bind-Value="@Messages.Text" Name="Text" Rows="5" Style="width: 100%;" Disabled="true"/>
         </div>
     </div>
+    <div class="row" style="margin-bottom: 16px">
+        <div class="col-md-3">
+            <RadzenLabel Text="Файлы"/>
+        </div>
+        <div class="col">
+            @foreach (var file in FilesList)
+            {
+            <div class="row" style="margin-bottom: 8px;">
+                <div class="col-md-8">
+                    <RadzenLabel Text="@file.FileName"/>
+                </div>
+                <div class="col-md-4">
+                    <RadzenButton Icon="get_app" ButtonStyle="ButtonStyle.Primary" Click="@(args => DownloadFile(file))" Style="margin-left: 8px;"/>
+                </div>
+            </div>
+            }
+        </div>
+    </div>
 </RadzenTemplateForm>
+
+<script>
+    function saveFile(fileName, byteBase64) {
+        var link = document.createElement('a');
+        link.href = 'data:application/octet-stream;base64,' + byteBase64;
+        link.download = fileName;
+        link.click();
+    }
+</script>
 
 @code {
     [Parameter] public Messages Messages { get; set; }
+
+    private List<Files> FilesList { get; set; } = new List<Files>();
+
+    protected override async Task OnInitializedAsync()
+    {
+        FilesList = await FilesService.GetFiles(Messages.FilesIds);
+    }
+    
+    private async Task DownloadFile(Files file)
+    {
+        var base64Data = Convert.ToBase64String(file.FileData);
+        await JSRuntime.InvokeVoidAsync("saveFile", file.FileName, base64Data);
+    }
 }
