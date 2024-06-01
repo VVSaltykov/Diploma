@@ -1,6 +1,7 @@
 ﻿using System.IO.Compression;
 using Diploma.Common.Models;
 using Diploma.Common.Services;
+using Diploma.Common.Utils;
 using Microsoft.AspNetCore.SignalR.Client;
 using Telegram.Bot;
 using Telegram.Bot.Types;
@@ -42,27 +43,6 @@ public class SignalRService
         var files = await filesService.GetFiles(message.FilesIds);
         var senderInfo = user != null ? $"{user.Name}" : "Unknown User";
         
-        
-        string tempDir = Path.Combine(Path.GetTempPath(), "TelegramFiles");
-        Directory.CreateDirectory(tempDir);
-
-        // Архивируем файлы
-        string zipFilePath = Path.Combine(tempDir, "files.zip");
-        using (FileStream zipToOpen = new FileStream(zipFilePath, FileMode.Create))
-        {
-            using (ZipArchive archive = new ZipArchive(zipToOpen, ZipArchiveMode.Create))
-            {
-                foreach (var file in files)
-                {
-                    ZipArchiveEntry entry = archive.CreateEntry(file.FileName);
-                    using (Stream entryStream = entry.Open())
-                    {
-                        await entryStream.WriteAsync(file.FileData, 0, file.FileData.Length);
-                    }
-                }
-            }
-        }
-        
         foreach (var recepientId in message.RecepientInTelegramIds)
         {
             var formattedMessage = $"**{message.Tittle}**\n \n" +
@@ -71,16 +51,15 @@ public class SignalRService
                                    $"**Текст:** \n" +
                                    $"{message.Text}";
             
-            using (var stream = File.OpenRead(zipFilePath))
+            byte[] zipBytes = await ZipFileCreator.CreateZipFile(files);
+            
+            using (MemoryStream zipStream = new MemoryStream(zipBytes))
             {
-                // Создаем объект InputMediaDocument для отправки
-                var fileName = "files.zip"; // Задайте имя файла
-                var inputMediaDocument = new InputFileStream(stream, fileName);
+                var fileName = "Файлы.zip";
+                var inputMediaDocument = new InputFileStream(zipStream, fileName);
 
-                // Отправляем документ с сообщением
                 await _telegramBotClient.SendDocumentAsync(recepientId, inputMediaDocument, caption: formattedMessage,parseMode: ParseMode.Markdown);
             }
         }
-        Directory.Delete(tempDir, true);
     }
 }

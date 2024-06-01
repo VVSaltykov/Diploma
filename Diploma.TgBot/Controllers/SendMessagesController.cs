@@ -3,6 +3,7 @@ using System.IO.Compression;
 using Diploma.Common.Models;
 using Diploma.Common.Models.Enums;
 using Diploma.Common.Services;
+using Diploma.Common.Utils;
 using Diploma.TgBot.Data;
 using Diploma.TgBot.Services;
 using Diploma.TgBot.UI;
@@ -117,34 +118,6 @@ public class SendMessagesController : BotController
                                $"**Дата и время:** {currentMessage.DateTime}\n\n" +
                                $"**Текст:**\n{currentMessage.Text}";
 
-        // Создаем пустой ZIP-архив
-        string zipFilePath = null;
-        if (currentMessage.FilesIds.Any())
-        {
-            var files = await filesService.GetFiles(currentMessage.FilesIds);
-            string tempDir = Path.Combine(Path.GetTempPath(), "TelegramFiles");
-            Directory.CreateDirectory(tempDir);
-
-            zipFilePath = Path.Combine(tempDir, "files.zip");
-            using (FileStream zipToOpen = new FileStream(zipFilePath, FileMode.Create))
-            {
-                using (ZipArchive archive = new ZipArchive(zipToOpen, ZipArchiveMode.Create))
-                {
-                    // Добавляем файлы в ZIP-архив
-                    foreach (var file in files)
-                    {
-                        // Добавляем файл в архив
-                        ZipArchiveEntry entry = archive.CreateEntry(file.FileName);
-                        using (Stream entryStream = entry.Open())
-                        {
-                            await entryStream.WriteAsync(file.FileData, 0, file.FileData.Length);
-                        }
-                    }
-                }
-            }
-        }
-
-        // Создаем InlineKeyboardMarkup
         var inlineKeyboardRows = new List<InlineKeyboardButton[]>
         {
             new []
@@ -167,29 +140,22 @@ public class SendMessagesController : BotController
 
         var inlineKeyboard = new InlineKeyboardMarkup(inlineKeyboardRows);
 
-        // Отправляем сообщение с файлом (если он есть) или без него
-        if (zipFilePath != null)
+        if (currentMessage.FilesIds.Any())
         {
-            using (var stream = File.OpenRead(zipFilePath))
+            var files = await filesService.GetFiles(currentMessage.FilesIds);
+            byte[] zipBytes = await ZipFileCreator.CreateZipFile(files);
+            
+            using (MemoryStream zipStream = new MemoryStream(zipBytes))
             {
-                // Создаем объект InputMediaDocument для отправки ZIP-архива
-                var fileName = "files.zip"; // Задайте имя файла
-                var inputMediaDocument = new InputFileStream(stream, fileName);
+                var fileName = "Файлы.zip";
+                var inputMediaDocument = new InputFileStream(zipStream, fileName);
 
-                // Отправляем документ с сообщением и клавиатурой
                 await Client.SendDocumentAsync(Update.GetChatId(), inputMediaDocument, caption: formattedMessage, replyMarkup: inlineKeyboard, parseMode: ParseMode.Markdown);
             }
         }
         else
         {
-            // Отправляем сообщение без файла, только с клавиатурой
             await Client.SendTextMessageAsync(Update.GetChatId(), formattedMessage, replyMarkup: inlineKeyboard, parseMode: ParseMode.Markdown);
-        }
-
-        // Удаляем временную директорию, если она создавалась
-        if (zipFilePath != null)
-        {
-            Directory.Delete(Path.GetDirectoryName(zipFilePath), true);
         }
     }
 }
