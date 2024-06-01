@@ -1,8 +1,12 @@
 ﻿@using Diploma.Common.Interfaces
 @using Diploma.Common.Models
+@using Diploma.Common.Services
+@using Diploma.Common.Utils
 @using Group = Diploma.Common.Models.Group
-@layout MainLayout
+@inject IFilesService FilesService
 @inject DialogService DialogService
+
+@layout MainLayout
 
 <RadzenTemplateForm TItem="Messages" Data="@Messages" Submit="@SubmitForm">
     <div class="row" style="margin-bottom: 16px">
@@ -33,6 +37,26 @@
             <RadzenTextArea @bind-Value="@ResponseText" Name="Text" Rows="5" Style="width: 100%;" />
         </div>
     </div>
+    <div class="row" style="margin-bottom: 16px">
+        <div class="position-relative flex-grow-1 d-flex justify-content-center">
+            <InputFile Multiple="true" OnChange="OnFileSelect" id="fileInput" style="display: none;" />
+            <button type="button" class="btn btn-primary login-button" onclick="document.getElementById('fileInput').click();">
+                Выбрать файлы
+            </button>
+        </div>
+        <div class="col-md-9">
+            @if(fileNames.Any())
+            {
+            <span>Выбрано @fileNames.Count файлов:</span>
+            <ul>
+                @foreach (var file in fileNames)
+                {
+                <li>@file</li>
+                }
+            </ul>
+            }
+        </div>
+    </div>
     <div class="row justify-content-center">
         <div class="col-md-3"></div>
         <div class="col-md-6 text-center">
@@ -45,12 +69,40 @@
 @code {
     [Parameter] public Messages Messages { get; set; }
     
+    private List<string> FileIds { get; set; } = new List<string>();
+    private List<string> fileNames = new List<string>();
     private string ResponseText { get; set; }
 
     private void SubmitForm(Messages model)
     {
         model.RecepientInTelegramIds.Add(model.User.ChatId);
-        model.Text = ResponseText; // Устанавливаем текст ответа
+        model.Text = ResponseText;
+        
+        if (model.FilesIds.Any() && FileIds.Any()) model.FilesIds.AddRange(FileIds);
+        if (!model.FilesIds.Any() && FileIds.Any()) model.FilesIds.AddRange(FileIds); 
+        
         DialogService.Close(model);
+    }
+    
+    private async Task OnFileSelect(InputFileChangeEventArgs e)
+    {
+        fileNames.Clear();
+        foreach (var file in e.GetMultipleFiles())
+        {
+            using var fileStream = file.OpenReadStream();
+            var fileData = await FilesFunctions.ConvertStreamToByteArrayAsync(fileStream);
+
+            var newFile = new Files
+            {
+                FileId = IdGenerator.GenerateId(),
+                FileName = file.Name,
+                FileData = fileData
+            };
+            await FilesService.Create(newFile);
+            
+            fileNames.Add(file.Name);
+            
+            FileIds.Add(newFile.FileId);
+        }
     }
 }

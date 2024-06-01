@@ -3,12 +3,11 @@ using Diploma.Common.Interfaces;
 using Diploma.Common.Models;
 using Diploma.Common.Models.Enums;
 using Diploma.Common.Services;
+using Diploma.Common.Utils;
 using Diploma.TgBot.Data;
 using Diploma.TgBot.Handlers;
 using Diploma.TgBot.Services;
 using Diploma.TgBot.UI;
-using Microsoft.AspNetCore.Mvc;
-using Refit;
 using Telegram.Bot;
 using Telegram.Bot.Types.Enums;
 using Telegram.Bot.Types.ReplyMarkups;
@@ -126,8 +125,8 @@ public class MessageController : BotController
                 string fileId = Update.Message.Document.FileId;
                 userState.FileIds.Add(fileId);
 
-                var fileStream = await GetFileStreamAsync(fileId); // Получаем поток файла
-                var fileData = await ConvertStreamToByteArrayAsync(fileStream); // Конвертируем поток в байты
+                var fileStream = await FilesFunctions.GetFileStreamAsync(Client, fileId); 
+                var fileData = await FilesFunctions.ConvertStreamToByteArrayAsync(fileStream); 
 
                 Files file = new Files
                 {
@@ -136,7 +135,7 @@ public class MessageController : BotController
                     FileData = fileData
                 };
 
-                await filesService.Create(file); // Сохраняем файл в базу данных
+                await filesService.Create(file); 
                 
                 await Client.SendTextMessageAsync(chatId, "Файл получен. Вы хотите прикрепить еще файл?", replyMarkup: new ReplyKeyboardMarkup(new[] { new KeyboardButton("Да"), new KeyboardButton("Нет") }) { ResizeKeyboard = true, OneTimeKeyboard = true });
             }
@@ -191,33 +190,12 @@ public class MessageController : BotController
             }
             catch (Exception ex)
             {
-                // Обработка других исключений, если необходимо
                 Console.WriteLine($"Error: {ex.Message}");
             }
             finally
             {
-                // Очистка состояния пользователя после завершения
                 userStates.TryRemove(chatId, out _);
             }
-        }
-    }
-    
-    private async Task<Stream> GetFileStreamAsync(string fileId)
-    {
-        var file = await Client.GetFileAsync(fileId);
-        var memoryStream = new MemoryStream();
-        await Client.DownloadFileAsync(file.FilePath, memoryStream);
-        memoryStream.Seek(0, SeekOrigin.Begin); // Сбрасываем указатель потока в начало
-        return memoryStream;
-    }
-
-    // Метод для конвертации потока в массив байтов
-    private async Task<byte[]> ConvertStreamToByteArrayAsync(Stream stream)
-    {
-        using (var memoryStream = new MemoryStream())
-        {
-            await stream.CopyToAsync(memoryStream);
-            return memoryStream.ToArray();
         }
     }
 }

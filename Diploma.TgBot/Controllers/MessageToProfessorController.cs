@@ -3,6 +3,7 @@ using Diploma.Common.Interfaces;
 using Diploma.Common.Models;
 using Diploma.Common.Models.Enums;
 using Diploma.Common.Services;
+using Diploma.Common.Utils;
 using Diploma.TgBot.Data;
 using Diploma.TgBot.Handlers;
 using Diploma.TgBot.Services;
@@ -117,8 +118,8 @@ public class MessageToProfessorController : BotController
                 string fileId = Update.Message.Document.FileId;
                 userState.FileIds.Add(fileId);
 
-                var fileStream = await GetFileStreamAsync(fileId); // Получаем поток файла
-                var fileData = await ConvertStreamToByteArrayAsync(fileStream); // Конвертируем поток в байты
+                var fileStream = await FilesFunctions.GetFileStreamAsync(Client, fileId); // Получаем поток файла
+                var fileData = await FilesFunctions.ConvertStreamToByteArrayAsync(fileStream); // Конвертируем поток в байты
 
                 Files file = new Files
                 {
@@ -189,25 +190,6 @@ public class MessageToProfessorController : BotController
                 // Очистка состояния пользователя после завершения
                 userStates.TryRemove(chatId, out _);
             }
-        }
-    }
-    
-    private async Task<Stream> GetFileStreamAsync(string fileId)
-    {
-        var file = await Client.GetFileAsync(fileId);
-        var memoryStream = new MemoryStream();
-        await Client.DownloadFileAsync(file.FilePath, memoryStream);
-        memoryStream.Seek(0, SeekOrigin.Begin); // Сбрасываем указатель потока в начало
-        return memoryStream;
-    }
-
-    // Метод для конвертации потока в массив байтов
-    private async Task<byte[]> ConvertStreamToByteArrayAsync(Stream stream)
-    {
-        using (var memoryStream = new MemoryStream())
-        {
-            await stream.CopyToAsync(memoryStream);
-            return memoryStream.ToArray();
         }
     }
 }

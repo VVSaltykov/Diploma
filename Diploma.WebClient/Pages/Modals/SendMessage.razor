@@ -169,11 +169,23 @@
         }
     </RadzenStack>
     <div class="row" style="margin-bottom: 16px">
-        <div class="col-md-3">
-            <RadzenLabel Text="Выберите файлы"/>
+        <div class="position-relative flex-grow-1 d-flex justify-content-center">
+            <InputFile Multiple="true" OnChange="OnFileSelect" id="fileInput" style="display: none;" />
+            <button type="button" class="btn btn-primary login-button" onclick="document.getElementById('fileInput').click();">
+                Выбрать файлы
+            </button>
         </div>
-        <div class="col">
-            <InputFile Multiple="true" OnChange="OnFileSelect" />
+        <div class="col-md-9">
+            @if(fileNames.Any())
+            {
+            <span>Выбрано @fileNames.Count файлов:</span>
+            <ul>
+                @foreach (var file in fileNames)
+                {
+                <li>@file</li>
+                }
+            </ul>
+            }
         </div>
     </div>
     <div class="row justify-content-center">
@@ -197,6 +209,7 @@
     private RadzenDataGrid<Group> GroupGrid;
 
     private List<string> FileIds { get; set; } = new List<string>();
+    private List<string> fileNames = new List<string>();
     private string ResponseText { get; set; }
 
     private void SubmitForm(Messages model)
@@ -221,17 +234,20 @@
 
         model.RecepientInTelegramIds = recipientIds.Distinct().ToList();
         model.Text = ResponseText;
-        model.FilesIds = FileIds;
+        
+        if (FileIds.Any()) model.FilesIds = FileIds;
+        
         DialogService.Close(model);
     }
     
     private async Task OnFileSelect(InputFileChangeEventArgs e)
     {
+        fileNames.Clear();
         foreach (var file in e.GetMultipleFiles())
         {
             using var fileStream = file.OpenReadStream();
-            var fileData = await ConvertStreamToByteArrayAsync(fileStream);
-            // Create a new file object and save it to the database
+            var fileData = await FilesFunctions.ConvertStreamToByteArrayAsync(fileStream);
+
             var newFile = new Files
             {
                 FileId = IdGenerator.GenerateId(),
@@ -239,17 +255,10 @@
                 FileData = fileData
             };
             await FilesService.Create(newFile);
-            // Add the file ID to the message
+            
+            fileNames.Add(file.Name);
+            
             FileIds.Add(newFile.FileId);
-        }
-    }
-    
-    private async Task<byte[]> ConvertStreamToByteArrayAsync(Stream stream)
-    {
-        using (var memoryStream = new MemoryStream())
-        {
-            await stream.CopyToAsync(memoryStream);
-            return memoryStream.ToArray();
         }
     }
 }

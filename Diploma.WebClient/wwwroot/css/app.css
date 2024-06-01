@@ -20,6 +20,12 @@ a, .btn-link {
   box-shadow: 0 0 0 0.1rem white, 0 0 0 0.25rem #258cfb;
 }
 
+.input-file-button {
+    background-color: blue; /* Цвет фона кнопки */
+    color: white; /* Цвет текста кнопки */
+    border-color: blue; /* Цвет рамки кнопки */
+}
+
 .content {
     padding-top: 1.1rem;
 }
