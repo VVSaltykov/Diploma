@@ -1,10 +1,12 @@
 ﻿@using Diploma.Common.Models
 @using Diploma.Common.Models.Enums
 @using Diploma.Common.Utils
+@using Diploma.WebClient.Utils
 @using Microsoft.AspNetCore.Components.Authorization
 @using EnumExtensions = Diploma.Common.Utils.EnumExtensions
-@layout MainLayout
 @inject DialogService DialogService
+@inject NotificationService NotificationService
+@layout MainLayout
 
     <RadzenTemplateForm TItem="RegistrationModel" Data="@RegistrationModel" Submit="@SubmitForm">
         <div class="row" style="margin-bottom: 16px">
@@ -66,7 +68,7 @@
     
     private void SubmitForm(RegistrationModel model)
     {
-        // Обработка отправки формы
+        NotificationService.ShowNotification("Успешно!", "Аккаунт создан!", NotificationSeverity.Success);
         DialogService.Close(model);
     }
 }

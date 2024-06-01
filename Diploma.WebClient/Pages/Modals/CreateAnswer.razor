@@ -1,10 +1,10 @@
 ﻿@using Diploma.Common.Interfaces
 @using Diploma.Common.Models
-@using Diploma.Common.Services
 @using Diploma.Common.Utils
-@using Group = Diploma.Common.Models.Group
+@using Diploma.WebClient.Utils
 @inject IFilesService FilesService
 @inject DialogService DialogService
+@inject NotificationService NotificationService
 
 @layout MainLayout
 
@@ -80,6 +80,8 @@
         
         if (model.FilesIds.Any() && FileIds.Any()) model.FilesIds.AddRange(FileIds);
         if (!model.FilesIds.Any() && FileIds.Any()) model.FilesIds.AddRange(FileIds); 
+        
+        NotificationService.ShowNotification("Успешно!", "Сообщение отправлено!", NotificationSeverity.Success);
         
         DialogService.Close(model);
     }

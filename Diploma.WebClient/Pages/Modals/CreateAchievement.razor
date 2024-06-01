@@ -1,9 +1,10 @@
 ﻿@using Diploma.Common.Models
 @using Diploma.Common.Utils
-
+@using Diploma.WebClient.Utils
+@inject DialogService DialogService
+@inject NotificationService NotificationService
 
 @layout MainLayout
-@inject DialogService DialogService
 
 <RadzenTemplateForm TItem="Achievements" Data="@Achievements" Submit="@SubmitForm">
     <div class="row" style="margin-bottom: 16px">
@@ -131,6 +132,9 @@
     {
         model.Text = ResponseText;
         model.Users = _selectedSportsmens.Distinct().ToList();
+        
+        NotificationService.ShowNotification("Успешно!", "Аккаунт создан!", NotificationSeverity.Success);
+        
         DialogService.Close(model);
     }
 }

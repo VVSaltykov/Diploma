@@ -2,10 +2,12 @@
 @using Diploma.Common.Models
 @using Diploma.Common.Interfaces
 @using Diploma.Common.ServicesForWeb
+@using Diploma.WebClient.Utils
 @inject IAccountService AccountService
 @inject NavigationManager NavigationManager
 @inject CookieService CookieService
 @inject SessionsService SessionsService
+@inject NotificationService NotificationService
 
 @layout EmptyLayout
 
@@ -50,19 +52,20 @@
             var session = await AccountService.Login(loginModel);
             if (session != null)
             {
-                CookieService.SetCookies("token", session.Token); // Установка куки
+                CookieService.SetCookies("token", session.Token);
                 
                 await SessionsService.RefreshSession();
                 NavigationManager.NavigateTo("/");
             }
             else
             {
+                NotificationService.ShowNotification("Ошибка", "Данные введены неверно!", NotificationSeverity.Error);
                 IsLoginFailed = true;
-                // Add additional error handling code here
             }
         }
         catch (Exception ex)
         {
+            NotificationService.ShowNotification("Ошибка", "Данные введены неверно!", NotificationSeverity.Error);
             IsLoginFailed = true;
         }
     }

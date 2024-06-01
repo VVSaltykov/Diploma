@@ -2,6 +2,7 @@
 @using Diploma.Common.Models
 @using System.IO;
 @using Diploma.Common.Utils
+@using Diploma.WebClient.Utils
 @using Group = Diploma.Common.Models.Group
 @layout MainLayout
 @inject DialogService DialogService
@@ -236,7 +237,7 @@
         model.Text = ResponseText;
         
         if (FileIds.Any()) model.FilesIds = FileIds;
-        
+        NotificationService.ShowNotification("Успешно!", "Сообщение отправлено!", NotificationSeverity.Success);
         DialogService.Close(model);
     }
     
