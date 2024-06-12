@@ -90,7 +90,9 @@
             { "Groups", Groups }
         };
         
-        var result = await DialogService.OpenAsync<SendMessage>("Отправить сообщение", parameters);
+        var options = new DialogOptions { Width = "60%" };
+        
+        var result = await DialogService.OpenAsync<SendMessage>("Отправить сообщение", parameters, options);
         if (result != null)
         {
             Messages newMessage = (Messages)result;
